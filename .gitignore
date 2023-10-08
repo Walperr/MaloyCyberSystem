@@ -4,3 +4,5 @@
 /ClientApplication/.idea
 /ClientApplication/MaloyClient/bin/
 /ClientApplication/MaloyClient/obj/
+/ClientApplication/Avalonia.Plot/bin/
+/ClientApplication/Avalonia.Plot/obj/
