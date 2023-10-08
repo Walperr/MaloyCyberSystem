@@ -1,3 +1,6 @@
 /MQTTServer/MQTTServer/bin/
 /MQTTServer/MQTTServer/obj/
 /MQTTServer/.idea
+/ClientApplication/.idea
+/ClientApplication/MaloyClient/bin/
+/ClientApplication/MaloyClient/obj/
