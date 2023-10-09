@@ -1,9 +1,10 @@
 #include <ESP8266WiFi.h>
-#include <SimplePortal.h>
-#include <time.h>      // time() ctime()
-#include <sntp.h>  // sntp_servermode_dhcp()
 #include <PubSubClient.h>
+#include <LiquidCrystal.h>
+#include <time.h>
+#include <sntp.h>
 #include <TZ.h>
+#include "WiFiRegistration.h"
 
 #define MYTZ TZ_Asia_Novosibirsk
 #define SERIAL_NUMBER "SN001"
@@ -12,22 +13,14 @@
 #define CONNECTIONS_TOPIC "Device/Connections/" SERIAL_NUMBER
 #define NOTIFICATION_TOPIC "Device/Notification/" SERIAL_NUMBER
 
+#define CLEAN_LINE "                "
+
 WiFiClient espClient;
 PubSubClient client(espClient);
 
-void showTime()
-{
-  time_t now = time(nullptr);
+const uint rs = 12, enable = 13, d4 = 0, d5 = 4, d6 = 5, d7 = 16;
 
-  Serial.print("Converted time: ");
-  Serial.println(ConvertTimeToString(now));
-
-  // human readable
-  Serial.print("time:     ");
-  Serial.print(ctime(&now));
-
-  Serial.println();
-}
+LiquidCrystal lcd(rs, enable, d4, d5, d6, d7);
 
 String ConvertTimeToString(time_t time)
 {
@@ -54,91 +47,204 @@ String ToTwoDigitString(int value)
 
 void OnMessageReceived(char* topic, byte* payload, unsigned int length) 
 {
-  Serial.print("Message arrived [");
-  Serial.print(topic);
-  Serial.print("] ");
-  for (int i = 0; i < length; i++) 
-    Serial.print((char)payload[i]);
+  Serial.println(topic);
+  lcd.clear();
+  lcd.print(topic);
 
-  Serial.println();
-
+  Serial.println((char*)payload);
+  lcd.setCursor(0,1);
+  lcd.print(CLEAN_LINE);
+  lcd.setCursor(0,1);
+  lcd.print((char*)payload);
+  
   if (String(topic) == String(CONNECTIONS_TOPIC))
   {
     int number = rand() % 9000 + 1000;
     
-    Serial.println(String("Connection code is ") + String(number));
+    Serial.print("to connect enter");
+    Serial.println(String(number));
+
+    lcd.clear();
+    lcd.print("to connect enter");
+    lcd.setCursor(0,1);
+    lcd.print(CLEAN_LINE);
+    lcd.setCursor(0,1);
+    lcd.print(String(number));
 
     client.publish("Device/ConnectionKeys", String(number).c_str());
   }
 
   if (String(topic) == String(COMMANDS_TOPIC))
   {
-    Serial.print("Command is");
-    for (int i = 0; i < length; i++) 
-    Serial.print((char)payload[i]);
-    Serial.println();
+    Serial.print("Command: ");
+    for (int i = 0; i < length; i++)
+      Serial.print((char)payload[i]);
+
+    lcd.clear();
+    lcd.print("Command:");
+    lcd.setCursor(0,1);
+    lcd.print(CLEAN_LINE);
+    lcd.setCursor(0,1);
+    for (int i = 0; i < length; i++)
+      lcd.print((char)payload[i]);
+  
   }
 }
 
-void reconnect() 
+void InitializeLCD()
 {
-  // Loop until we're reconnected
-  while (!client.connected()) 
-  {
-    Serial.print("Attempting MQTT connection...");
-  
-    String clientId = SERIAL_NUMBER;
-    String password = DEVICE_PASSWORD;
-    // Attempt to connect
-    if (client.connect(clientId.c_str(), clientId.c_str(), password.c_str()))
-    {
-      Serial.println("connected");
-      client.subscribe(COMMANDS_TOPIC);
-      client.subscribe(CONNECTIONS_TOPIC);
-    }
-    else
-    {
-      Serial.print("failed, rc=");
-      Serial.print(client.state());
-      Serial.println(" try again in 5 seconds");
-      // Wait 30 seconds before retrying
-      delay(30000);
-    }
-  }
+  lcd.begin(16,2);
+  Serial.println("display initialized");
+  lcd.print("display initialized");
 }
 
-void setup()
+void InitializeTimeSync()
 {
-  Serial.begin(115200);
-  portalCfg.SpotPointName = String("Maloy ") + String(SERIAL_NUMBER);
-
-  portalRun(999999999999999999999999999999999999);
-  
-  Serial.println(portalStatus());
-  // статус: 0 error, 1 connect, 2 ap, 3 local, 4 exit, 5 timeout
-  
-  while (portalStatus() != SP_SUBMIT);
-
   configTime(MYTZ, "time.windows.com");
 
   yield();
+}
 
+void InitializeConfigServer()
+{
+  Serial.println("Starting server");
+  lcd.setCursor(0,0);
+  lcd.print(CLEAN_LINE);
+  lcd.setCursor(0,0);
+  lcd.print("Starting server");
+  
+  configuration.NetworkName = String("Maloy ") + String(SERIAL_NUMBER);
+
+  Serial.println("Connect to");
+  lcd.setCursor(0,0);
+  lcd.print(CLEAN_LINE);
+  lcd.setCursor(0,0);
+  lcd.print("Connect to");
+
+  Serial.println(configuration.NetworkName);
+  lcd.setCursor(0,1);
+  lcd.print(CLEAN_LINE);
+  lcd.setCursor(0,1);
+  lcd.print(configuration.NetworkName);
+
+  RunServer();
+
+  while (ServerStatus() != WiFi_SUBMIT);
+}
+
+void ConnectToWifi()
+{
   WiFi.mode(WIFI_STA);
-  WiFi.begin(portalCfg.SSID, portalCfg.pass);
+  WiFi.begin(configuration.WiFiSSID, configuration.Password);
+
+  Serial.println(configuration.WiFiSSID);
+  Serial.println(configuration.Password);
+
+  Serial.println("Connecting");
+  lcd.setCursor(0,0);
+  lcd.print(CLEAN_LINE);
+  lcd.setCursor(0,0);
+  lcd.print("Connecting");
+
+  lcd.setCursor(0,1);
+  lcd.print(CLEAN_LINE);
+  lcd.setCursor(0,1);
 
   while (WiFi.status() != WL_CONNECTED)
   {
     delay(500);
     Serial.print(".");
+    lcd.print(".");
   }
+
   Serial.println("Connected");
+  lcd.setCursor(0,0);
+  lcd.print(CLEAN_LINE);
+  lcd.setCursor(0,0);
+  lcd.print("Connected");
+
   Serial.println(WiFi.localIP());
+  lcd.setCursor(0,1);
+  lcd.print(CLEAN_LINE);
+  lcd.setCursor(0,1);
+  lcd.print(WiFi.localIP());
+}
 
-  Serial.print("Broker adress: ");
-  Serial.println(String(portalCfg.BrokerAdress) + ":" + String(portalCfg.Port));
+void MqttReconnect() 
+{
+  // Loop until we're reconnected
+  while (!client.connected()) 
+  {
+    Serial.println("Connecting to MQTT broker");
+    lcd.setCursor(0,0);
+    lcd.print(CLEAN_LINE);
+    lcd.setCursor(0,0);
+    lcd.print("Connecting to ");
+    lcd.setCursor(0,1);
+    lcd.print(CLEAN_LINE);
+    lcd.setCursor(0,1);
+    lcd.print("MQTT broker");
 
-  client.setServer(portalCfg.BrokerAdress, portalCfg.Port);
+    String clientId = SERIAL_NUMBER;
+    String password = DEVICE_PASSWORD;
+    
+    if (client.connect(clientId.c_str(), clientId.c_str(), password.c_str()))
+    {
+      Serial.println("mqtt connected");
+      lcd.setCursor(0,0);
+      lcd.print(CLEAN_LINE);
+      lcd.setCursor(0,0);
+      lcd.print("mqtt connected");
+      client.subscribe(COMMANDS_TOPIC);
+      client.subscribe(CONNECTIONS_TOPIC);
+    }
+    else
+    {
+      Serial.println(String("failed, rc=") + String(client.state()));
+      lcd.setCursor(0,0);
+      lcd.print(CLEAN_LINE);
+      lcd.setCursor(0,0);
+      lcd.print(String("failed, rc=") + String(client.state()));
+      
+      Serial.println("retry in 30 seconds");
+      lcd.setCursor(0,1);
+      lcd.print(CLEAN_LINE);
+      lcd.setCursor(0,1);
+      lcd.print("retry in 30 sec");
+
+      delay(30000);
+    }
+  }
+}
+
+void InitializeMqttClient()
+{
+  client.setServer(configuration.BrokerAddress, configuration.Port);
+
+  Serial.println(String(configuration.BrokerAddress) + String(":") + String(configuration.Port));
+
   client.setCallback(OnMessageReceived);
+
+  Serial.println("MQTT initialized");
+  lcd.setCursor(0,1);
+  lcd.print(CLEAN_LINE);
+  lcd.setCursor(0,1);
+  lcd.print("MQTT initialized");
+}
+
+void setup()
+{
+  Serial.begin(9600);
+
+  InitializeLCD();
+
+  InitializeTimeSync();
+
+  InitializeConfigServer();
+
+  ConnectToWifi();
+
+  InitializeMqttClient();
 }
 
 double GetData()
@@ -148,10 +254,10 @@ double GetData()
 
 unsigned long last;
 
-void loop() 
+void loop()
 {
   if (!client.connected())
-    reconnect();
+  MqttReconnect();
 
   client.loop();
 
@@ -171,6 +277,18 @@ void loop()
     if (value >= 60000 && value <= 120000)
     { 
       String alarmMessage = String("Alarm! The Value is ") + String(value);
+
+      Serial.println(alarmMessage);
+
+      lcd.setCursor(0,0);
+      lcd.print(CLEAN_LINE);
+      lcd.setCursor(0,0);
+      lcd.print("Alarm! The Value is ");
+
+      lcd.setCursor(0,1);
+      lcd.print(CLEAN_LINE);
+      lcd.setCursor(0,1);
+      lcd.print(String(value));
 
       client.publish(NOTIFICATION_TOPIC, alarmMessage.c_str());
     }
