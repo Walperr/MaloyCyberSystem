@@ -15,9 +15,9 @@ public class MainWindowViewModel : ViewModelBase
         Plot = PlotFactory.CreatePlot();
 
         var xMin = -1;
-        var xStep = 0.0004;
+        var xStep = 0.1;
 
-        var x = Enumerable.Range(0, 5000).Select(i => xMin + xStep * i).ToArray();
+        var x = Enumerable.Range(0, 10000000).Select(i => xMin + xStep * i).ToArray();
         var y = x.Select(Math.Sin).ToArray();
         
         var series = PlotFactory.CreateSeries();
@@ -38,12 +38,12 @@ public class MainWindowViewModel : ViewModelBase
         series.YValues = y;
         
         series.Color = Colors.Blue;
-        series.LineStyle = LineStyle.Dash;
+        // series.LineStyle = LineStyle.Dash;
         series.Thickness = 2;
         
         Plot.AddSeries(series);
         
-        y = x.Select(d => Math.Cos(d * 3) * 1.5).ToArray();
+       y = x.Select(d => Math.Cos(d * 3) * 1.5).ToArray();
         
         series = PlotFactory.CreateSeries();
 
@@ -51,10 +51,24 @@ public class MainWindowViewModel : ViewModelBase
         series.YValues = y;
         
         series.Color = Colors.Green;
-        series.LineStyle = LineStyle.DashDotDot;
+        // series.LineStyle = LineStyle.DashDotDot;
         series.Thickness = 2;
         
         Plot.AddSeries(series);
+        
+        y = x.Select(d => Math.Cos(d) * 0.5).ToArray();
+        
+        series = PlotFactory.CreateSeries();
+
+        series.XValues = x;
+        series.YValues = y;
+        
+        series.Color = Colors.Brown;
+        // series.LineStyle = LineStyle.DashDotDot;
+        series.Thickness = 3;
+        
+        Plot.AddSeries(series);
+       
         Plot.AutoScale = false;
     }
     

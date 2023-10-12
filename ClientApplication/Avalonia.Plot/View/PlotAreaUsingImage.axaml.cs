@@ -1,4 +1,4 @@
-﻿using System.ComponentModel;
+using System.ComponentModel;
 using System.Diagnostics;
 using Avalonia.Controls;
 using Avalonia.Input;
@@ -7,15 +7,13 @@ using Avalonia.Media.Imaging;
 using Avalonia.Plot.Misc;
 using Avalonia.Plot.ViewModel;
 using Avalonia.Skia;
-using Avalonia.Threading;
 using SkiaSharp;
 
 namespace Avalonia.Plot.View;
 
-public partial class PlotArea : UserControl
+public partial class PlotAreaUsingImage : UserControl
 {
     private const double SCALE_STEP = 0.1D;
-    private readonly SkiaDrawingOperation _drawOperation = new();
 
     private IPlotViewModel? _plot;
 
@@ -24,11 +22,9 @@ public partial class PlotArea : UserControl
 
     private Rect _startRect;
 
-    public PlotArea()
+    public PlotAreaUsingImage()
     {
         InitializeComponent();
-
-        _drawOperation.OnRender += OnRender;
     }
 
     protected override void OnDataContextChanged(EventArgs e)
@@ -49,7 +45,31 @@ public partial class PlotArea : UserControl
             _plot.PropertyChanged += PlotOnPropertyChanged;
         }
 
-        InvalidateVisual();
+        RenderBitmap();
+    }
+
+    private void RenderBitmap()
+    {
+        if (!IsVisible)
+            return;
+        var writeableBitmap =
+            new WriteableBitmap(new PixelSize((int)Bounds.Width, (int)Bounds.Height), new Vector(96, 96));
+
+        using var buffer = writeableBitmap.Lock();
+
+        var surface = SKSurface.Create(new SKPixmap(new SKImageInfo
+        {
+            Width = writeableBitmap.PixelSize.Width,
+            Height = writeableBitmap.PixelSize.Height,
+            AlphaType = SKAlphaType.Premul,
+            ColorType = SKColorType.Bgra8888
+        }, buffer.Address));
+
+        var canvas = surface.Canvas;
+
+        OnRender(canvas);
+
+        Image.Source = writeableBitmap;
     }
 
     private void PlotOnPropertyChanged(object? sender, PropertyChangedEventArgs e)
@@ -57,23 +77,23 @@ public partial class PlotArea : UserControl
         if (!IsVisible)
             return;
         var stopwatch = Stopwatch.StartNew();
-        
+
         stopwatch.Restart();
-        InvalidateVisual();
+        RenderBitmap();
         stopwatch.Stop();
 
-        Console.WriteLine($"Plot forward render elapsed: {stopwatch.Elapsed}");
+        Console.WriteLine($"Plot render to bitmap elapsed: {stopwatch.Elapsed}");
     }
 
     private void PlotOnRedrawSuggested(object? sender, EventArgs e)
     {
-        InvalidateVisual();
+        RenderBitmap();
     }
 
-    public override void Render(DrawingContext context)
+    protected override void OnSizeChanged(SizeChangedEventArgs e)
     {
-        _drawOperation.Bounds = Bounds;
-        context.Custom(_drawOperation);
+        base.OnSizeChanged(e);
+        RenderBitmap();
     }
 
     private void OnRender(SKCanvas canvas)
@@ -99,12 +119,12 @@ public partial class PlotArea : UserControl
         var height = yMax - yMin;
 
         using var paint = new SKPaint();
-        
+
         paint.Color = _plot.GridLinesColor.ToSKColor();
         paint.StrokeWidth = 1;
 
         var pixelXStep = 25;
-        
+
         var stepX = pixelXStep * width / bounds.Width;
 
         var offsetX = ((int)(xMin / stepX) - 1) * stepX;
@@ -115,7 +135,7 @@ public partial class PlotArea : UserControl
             canvas.DrawLine((float)pixelOffsetX, bounds.Top, (float)pixelOffsetX, bounds.Bottom, paint);
 
         var pixelYStep = 25;
-        
+
         var stepY = pixelYStep * height / bounds.Height;
 
         var offsetY = ((int)(yMin / stepY) - 1) * stepY;
@@ -178,12 +198,12 @@ public partial class PlotArea : UserControl
 
         if (end > xs.Length)
             end = xs.Length;
-        
+
         var lowY = ys[i];
         var highY = ys[i];
 
         var prevX = (int)(left + (xs[i] - xmin) * sx);
-        
+
         for (i++; i < end; i++)
         {
             var screenX = (int)(left + (xs[i] - xmin) * sx);
@@ -203,7 +223,7 @@ public partial class PlotArea : UserControl
 
             if (Math.Abs(y1 - y2) >= 1)
                 yield return new SKPoint(prevX, y2);
-            
+
             prevX = screenX;
             lowY = ys[i];
             highY = ys[i];

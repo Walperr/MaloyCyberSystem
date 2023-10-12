@@ -16,6 +16,10 @@
         <vm:MainWindowViewModel/>
     </Design.DataContext>
 
-    <view:PlotArea DataContext="{Binding Plot}"/>
+    <Grid RowDefinitions="Auto, *">
+        <CheckBox Grid.Row="0" x:Name="CheckBox" IsChecked="True"/>
+        <view:PlotArea Grid.Row="1" DataContext="{Binding Plot}" IsVisible="{Binding IsChecked, ElementName=CheckBox}"/>
+        <view:PlotAreaUsingImage Grid.Row="1" DataContext="{Binding Plot}" IsVisible="{Binding !IsChecked, ElementName=CheckBox}"/>
+    </Grid>
 
 </Window>

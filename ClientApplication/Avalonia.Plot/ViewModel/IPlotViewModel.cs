@@ -14,12 +14,12 @@ public interface IPlotViewModel : INotifyPropertyChanged
     double XMin { get; set; }
     double XMax { get; set; }
     
-    double XStep { get; set; }
+    double XAxisStep { get; set; }
     
     double YMin { get; set; }
     double YMax { get; set; }
     
-    double YStep { get; set; }
+    double YAxisStep { get; set; }
     
     bool AutoScale { get; set; }
 

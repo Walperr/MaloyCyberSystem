@@ -14,10 +14,10 @@ internal sealed class PlotViewModel : ReactiveObject, IPlotViewModel
     private Color _gridLinesColor = Colors.DimGray;
     private double _xMax = 10.0;
     private double _xMin;
-    private double _xStep = 0.1;
+    private double _xStep = 100;
     private double _yMax = 10.0;
     private double _yMin;
-    private double _yStep = 0.1;
+    private double _yStep = 0.2;
 
     public Color GridLinesColor
     {
@@ -104,7 +104,7 @@ internal sealed class PlotViewModel : ReactiveObject, IPlotViewModel
         }
     }
 
-    public double XStep
+    public double XAxisStep
     {
         get => _xStep;
         set
@@ -152,7 +152,7 @@ internal sealed class PlotViewModel : ReactiveObject, IPlotViewModel
         }
     }
 
-    public double YStep
+    public double YAxisStep
     {
         get => _yStep;
         set

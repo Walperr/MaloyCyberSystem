@@ -14,4 +14,33 @@ public static class Extensions
             _ => throw new ArgumentOutOfRangeException(nameof(lineStyle), lineStyle, null)
         } ?? Array.Empty<float>();
     }
+    
+    public static int QuickSearch<T>(this IReadOnlyList<T>? items, Predicate<T> search,
+        int? start = null, int? end = null)
+    {
+        if (items is null || items.Count == 0)
+            return -1;
+
+        var min = start ?? 0;
+        var startIndex = min;
+        var max = end ?? items.Count - 1;
+        var endIndex = max;
+
+        while (startIndex <= endIndex && !search(items[startIndex]))
+        {
+            var middle = (startIndex + endIndex) / 2;
+            if (search(items[middle]))
+                endIndex = middle;
+            else
+                startIndex = middle + 1;
+        }
+
+        if (endIndex <= min)
+            return -1;
+
+        if (startIndex >= max + 1)
+            return max + 1;
+
+        return startIndex;
+    }
 }
