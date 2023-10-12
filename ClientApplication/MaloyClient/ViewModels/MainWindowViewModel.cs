@@ -17,7 +17,7 @@ public class MainWindowViewModel : ViewModelBase
         var xMin = -1;
         var xStep = 0.1;
 
-        var x = Enumerable.Range(0, 10000000).Select(i => xMin + xStep * i).ToArray();
+        var x = Enumerable.Range(0, 100000).Select(i => xMin + xStep * i).ToArray();
         var y = x.Select(Math.Sin).ToArray();
         
         var series = PlotFactory.CreateSeries();

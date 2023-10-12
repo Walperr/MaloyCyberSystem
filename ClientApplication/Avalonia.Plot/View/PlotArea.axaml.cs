@@ -167,24 +167,23 @@ public partial class PlotArea : UserControl
 
         var left = bounds.Left;
         var bot = bounds.Bottom;
-        var right = bounds.Right;
 
-        var i = xs.QuickSearch(x => x >= xmin) - 1;
+        var start = xs.QuickSearch(x => x >= xmin) - 1;
 
         var end = xs.QuickSearch(x => x > xmax) + 2;
 
-        if (i < 0)
-            i = 0;
+        if (start < 0)
+            start = 0;
 
         if (end > xs.Length)
             end = xs.Length;
-        
-        var lowY = ys[i];
-        var highY = ys[i];
 
-        var prevX = (int)(left + (xs[i] - xmin) * sx);
-        
-        for (i++; i < end; i++)
+        var lowY = ys[start];
+        var highY = ys[start];
+
+        var prevX = (int)(left + (xs[start] - xmin) * sx);
+
+        for (int i = start + 1; i < end; i++)
         {
             var screenX = (int)(left + (xs[i] - xmin) * sx);
 
@@ -196,14 +195,14 @@ public partial class PlotArea : UserControl
                 continue;
             }
 
-            var y1 = (float)(bot - (lowY - ymin) * sy);
-            yield return new SKPoint(prevX, y1);
+            lowY = bot - (lowY - ymin) * sy;
+            yield return new SKPoint(prevX, (float)lowY);
 
-            var y2 = (float)(bot - (highY - ymin) * sy);
+            highY = bot - (highY - ymin) * sy;
 
-            if (Math.Abs(y1 - y2) >= 1)
-                yield return new SKPoint(prevX, y2);
-            
+            if (Math.Abs(lowY - highY) >= 1)
+                yield return new SKPoint(prevX, (float)highY);
+
             prevX = screenX;
             lowY = ys[i];
             highY = ys[i];
