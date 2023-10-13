@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Linq;
 using Avalonia.Media;
+using Avalonia.Media.Fonts;
 using Avalonia.Plot.Misc;
 using Avalonia.Plot.ViewModel;
 
@@ -70,6 +71,13 @@ public class MainWindowViewModel : ViewModelBase
         Plot.AddSeries(series);
        
         Plot.AutoScale = false;
+
+        var fonts = FontManager.Current.SystemFonts;
+
+        foreach (var font in fonts)
+        {
+            Console.WriteLine(font.Name);
+        }
     }
     
     

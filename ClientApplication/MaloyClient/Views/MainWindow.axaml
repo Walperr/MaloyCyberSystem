@@ -4,11 +4,20 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:view="clr-namespace:Avalonia.Plot.View;assembly=Avalonia.Plot"
-        mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+        xmlns:views="clr-namespace:MaloyClient.Views"
+        mc:Ignorable="d" d:DesignWidth="300" d:DesignHeight="685"
         x:Class="MaloyClient.Views.MainWindow"
         x:DataType="vm:MainWindowViewModel"
         Icon="/Assets/avalonia-logo.ico"
-        Title="MaloyClient">
+        Width="300"
+        Height="685"
+        ExtendClientAreaToDecorationsHint="True"
+        ExtendClientAreaChromeHints="Default"
+        CanResize="False"
+        Title="MaloyClient"
+        PointerPressed="InputElement_OnPointerPressed"
+        PointerReleased="InputElement_OnPointerReleased"
+        PointerMoved="InputElement_OnPointerMoved">
 
     <Design.DataContext>
         <!-- This only sets the DataContext for the previewer in an IDE,
@@ -16,10 +25,6 @@
         <vm:MainWindowViewModel/>
     </Design.DataContext>
 
-    <Grid RowDefinitions="Auto, *">
-        <CheckBox Grid.Row="0" x:Name="CheckBox" IsChecked="True"/>
-        <view:PlotArea Grid.Row="1" DataContext="{Binding Plot}" IsVisible="{Binding IsChecked, ElementName=CheckBox}"/>
-        <view:PlotAreaUsingImage Grid.Row="1" DataContext="{Binding Plot}" IsVisible="{Binding !IsChecked, ElementName=CheckBox}"/>
-    </Grid>
+    <views:MainView/>
 
 </Window>
