@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Linq;
+using Avalonia;
+using Avalonia.Controls;
 using Avalonia.Media;
 using Avalonia.Media.Fonts;
 using Avalonia.Plot.Misc;
@@ -15,8 +17,11 @@ public class MainWindowViewModel : ViewModelBase
     {
         Plot = PlotFactory.CreatePlot();
 
-        Plot.Background = Color.FromUInt32(0xFF353340);
-        Plot.GridLinesColor = Color.FromUInt32(0xFF22202F);
+        var mainColor = (Color) (Application.Current?.FindResource("BackgroundMainColor") ?? Colors.White);
+        var linesColor = (Color) (Application.Current?.FindResource("BackgroundSelectedColor") ?? Colors.DimGray);
+
+        Plot.Background = mainColor;
+        Plot.GridLinesColor = linesColor;
 
         var xMin = -Math.PI;
         var xStep = Math.PI * 2 / 1000000;
@@ -29,7 +34,7 @@ public class MainWindowViewModel : ViewModelBase
         series.XValues = x;
         series.YValues = y;
         
-        series.Color = Colors.Yellow;
+        series.Color = Colors.Red;
         series.LineStyle = LineStyle.Solid;
         
         Plot.AddSeries(series);

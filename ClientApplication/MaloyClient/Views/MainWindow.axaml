@@ -13,9 +13,7 @@
         ExtendClientAreaChromeHints="Default"
         CanResize="True"
         Title="MaloyClient"
-        PointerPressed="InputElement_OnPointerPressed"
-        PointerReleased="InputElement_OnPointerReleased"
-        PointerMoved="InputElement_OnPointerMoved">
+        Background="{StaticResource BackgroundMain}">
 
     <Design.DataContext>
         <!-- This only sets the DataContext for the previewer in an IDE,

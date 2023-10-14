@@ -4,17 +4,23 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              xmlns:viewModels="clr-namespace:MaloyClient.ViewModels"
              xmlns:view="clr-namespace:Avalonia.Plot.View;assembly=Avalonia.Plot"
-             mc:Ignorable="d" d:DesignWidth="600" d:DesignHeight="400"
+             xmlns:system="clr-namespace:System;assembly=System.Runtime"
+             mc:Ignorable="d" d:DesignWidth="900" d:DesignHeight="500"
              x:Class="MaloyClient.Views.MainView"
              x:DataType="viewModels:MainWindowViewModel">
-    <Grid Background="{StaticResource BackgroundMain}">
+    <Grid Margin="0,25,0,0">
         <Grid Background="{StaticResource BackgroundMain}"
               RowDefinitions="Auto, *"
-              ColumnDefinitions="Auto, Auto, *">
+              ColumnDefinitions="Auto, Auto, *, Auto, Auto">
             <TextBlock Grid.Row="0"
                        Grid.Column="0"
                        Text="Devices"
                        Theme="{StaticResource TitleText}" />
+            <TextBlock Grid.Row="0"
+                       Grid.Column="0"
+                       Text="Log out"
+                       Foreground="{StaticResource TextSecondary}"
+                       Margin="5" />
             <ListBox Grid.Row="1" Grid.Column="0">
                 <ListBox.ItemTemplate>
                     <DataTemplate DataType="viewModels:Device">
@@ -30,8 +36,7 @@
                             </TextBlock>
                             <CheckBox Grid.Column="1"
                                       IsChecked="{Binding Online}"
-                                      Theme="{StaticResource CheckBoxLampTheme}">
-                            </CheckBox>
+                                      Theme="{StaticResource CheckBoxLampTheme}" />
                         </Grid>
                     </DataTemplate>
                 </ListBox.ItemTemplate>
@@ -51,21 +56,112 @@
             <GridSplitter Grid.Row="0"
                           Grid.RowSpan="2"
                           Grid.Column="1"
-                          VerticalAlignment="Stretch"
-                          Background="{StaticResource BackgroundSelected}" />
+                          Theme="{StaticResource VerticalSplitter}" />
 
-            <TabControl Grid.Row="1"
+            <TabControl Grid.Row="0"
+                        Grid.RowSpan="2"
                         Grid.Column="2">
-                <TabItem Header="График">
-                    <view:Plot CornerRadius="12"
-                               Margin="10"
-                               BorderBrush="{StaticResource BackgroundSelected}"
-                               BorderThickness="2"
-                               DataContext="{Binding Plot}" />
+                <TabItem Header="Device 1">
+                    <Grid RowDefinitions="Auto, *">
+                        <Grid Grid.Row="0"
+                              RowDefinitions="*,*"
+                              ColumnDefinitions="*,*">
+                            <TextBlock Text="Name:" Margin="5" VerticalAlignment="Center" />
+                            <TextBlock Grid.Column="0" Grid.Row="1" Text="Data limits:" Margin="5"
+                                       VerticalAlignment="Center" />
+                            <TextBlock Grid.Row="0" Grid.Column="1" Text="Serial number: SN001" Margin="5"
+                                       VerticalAlignment="Center" x:Name="SerialText" />
+                            <Button Grid.Row="1"
+                                    Grid.Column="1"
+                                    Height="30"
+                                    Width="{Binding Bounds.Width, ElementName=SerialText}"
+                                    Content="Refresh data"
+                                    HorizontalAlignment="Left"
+                                    Theme="{StaticResource CommandButton}" />
+                        </Grid>
+                        <TabControl Grid.Row="1" TabStripPlacement="Left">
+                            <TabItem Header="Chart">
+                                <view:Plot CornerRadius="12"
+                                           Margin="10"
+                                           BorderBrush="{StaticResource BackgroundSelected}"
+                                           BorderThickness="2"
+                                           DataContext="{Binding Plot}" />
+                            </TabItem>
+                            <TabItem Header="Data" />
+                        </TabControl>
+                    </Grid>
                 </TabItem>
-                <TabItem Header="еще какая-то фигня">
-                    <TextBlock Text="Здесь действительно какая-то фигня"
-                               Theme="{StaticResource TitleText}"></TextBlock>
+                <TabItem Header="Device 2" />
+                <TabItem Header="Device 3" />
+            </TabControl>
+
+            <GridSplitter Grid.Row="0"
+                          Grid.RowSpan="2"
+                          Grid.Column="3"
+                          Theme="{StaticResource VerticalSplitter}" />
+
+            <TabControl Grid.Row="0"
+                        Grid.RowSpan="2"
+                        Grid.Column="4">
+                <TabItem Header="Commands">
+                    <Grid RowDefinitions="Auto, *, Auto">
+                        <TextBlock Text="Device1"/>
+                        <ListBox Grid.Row="1">
+                                <ListBox.ItemTemplate>
+                                    <DataTemplate>
+                                        <Grid ColumnDefinitions="*,Auto">
+                                            <Button Content="Command" Margin="5,0" />
+                                            <TextBlock Grid.Column="1" Text="Content" VerticalAlignment="Center" Margin="5,0" />
+                                        </Grid>
+                                    </DataTemplate>
+                                </ListBox.ItemTemplate>
+                                <ListBox.Items>
+                                    <system:String>Command 1</system:String>
+                                    <system:String>Command 1</system:String>
+                                    <system:String>Command 1</system:String>
+                                    <system:String>Command 1</system:String>
+                                </ListBox.Items>
+                            </ListBox>
+                            <Button Grid.Row="2" Theme="{StaticResource CommandButton}"
+                                    Content="New command"/>
+                        </Grid>
+                </TabItem>
+                <TabItem Header="Notifications">
+                    <ItemsControl>
+                        <ItemsControl.ItemTemplate>
+                            <DataTemplate DataType="system:String">
+                                <Border Background="{StaticResource BackgroundAlter}"
+                                        BorderThickness="0"
+                                        CornerRadius="12"
+                                        Padding="10"
+                                        Margin="5"
+                                        HorizontalAlignment="Left"
+                                        MinWidth="100"
+                                        MinHeight="50"
+                                        MaxWidth="300">
+                                    <Grid>
+                                        <TextBlock Text="Device1"
+                                                   HorizontalAlignment="Left"
+                                                   TextDecorations="Underline"
+                                                   Margin="0,-5,0,0"
+                                                   Opacity="0.7"
+                                                   FontSize="12"/>
+                                        <TextBlock Text="{Binding .}"
+                                                   Margin="0,10,0,0"
+                                                   TextWrapping="Wrap"
+                                                   FontSize="14"/>
+                                    </Grid>
+                                </Border>
+                            </DataTemplate>
+                        </ItemsControl.ItemTemplate>
+                        <ItemsControl.Items>
+                            <system:String>Message 1</system:String>
+                            <system:String>Message 2fbdfbdfbdfbd</system:String>
+                            <system:String>Message 3</system:String>
+                            <system:String>Message 4 efweuhg;euohgeurhgergneirgberigjerighneriovbnofbln;bgva;eorh g3t84y802ytghioh8eh2u</system:String>
+                            <system:String>Message 5</system:String>
+                        </ItemsControl.Items>
+                    </ItemsControl>
                 </TabItem>
             </TabControl>
 

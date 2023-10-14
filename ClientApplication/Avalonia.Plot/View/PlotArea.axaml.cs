@@ -1,13 +1,10 @@
 ﻿using System.ComponentModel;
-using System.Diagnostics;
 using Avalonia.Controls;
 using Avalonia.Input;
 using Avalonia.Media;
-using Avalonia.Media.Imaging;
 using Avalonia.Plot.Misc;
 using Avalonia.Plot.ViewModel;
 using Avalonia.Skia;
-using Avalonia.Threading;
 using SkiaSharp;
 
 namespace Avalonia.Plot.View;
@@ -331,7 +328,5 @@ public partial class PlotArea : UserControl
     protected override void OnPointerReleased(PointerReleasedEventArgs e)
     {
         _pointerCaptured = false;
-        
-        e.Handled = true;
     }
 }

@@ -4,6 +4,46 @@
 
     <Styles.Resources>
         <ResourceDictionary>
+            <ControlTheme x:Key="{x:Type ItemsControl}"
+                          TargetType="ItemsControl">
+                <Setter Property="Background" Value="{DynamicResource BackgroundMain}" />
+                <Setter Property="BorderBrush" Value="Transparent" />
+                <Setter Property="BorderThickness" Value="0" />
+                <Setter Property="Padding" Value="4" />
+                <Setter Property="ScrollViewer.HorizontalScrollBarVisibility" Value="Disabled" />
+                <Setter Property="ScrollViewer.VerticalScrollBarVisibility" Value="Auto" />
+                <Setter Property="ScrollViewer.IsScrollChainingEnabled" Value="True" />
+                <Setter Property="ItemTemplate">
+                    <DataTemplate>
+                        <TextBlock Text="{Binding DataContext, RelativeSource={RelativeSource Self}}" />
+                    </DataTemplate>
+                </Setter>
+                <Setter Property="Template">
+                    <ControlTemplate>
+                        <Border Name="border"
+                                BorderBrush="{TemplateBinding BorderBrush}"
+                                BorderThickness="{TemplateBinding BorderThickness}"
+                                CornerRadius="{TemplateBinding CornerRadius}">
+                            <ScrollViewer Name="PART_ScrollViewer"
+                                          AllowAutoHide="{TemplateBinding (ScrollViewer.AllowAutoHide)}"
+                                          BringIntoViewOnFocusChange="{TemplateBinding (ScrollViewer.BringIntoViewOnFocusChange)}"
+                                          Background="{TemplateBinding Background}"
+                                          HorizontalScrollBarVisibility="{TemplateBinding (ScrollViewer.HorizontalScrollBarVisibility)}"
+                                          IsScrollChainingEnabled="{TemplateBinding (ScrollViewer.IsScrollChainingEnabled)}"
+                                          VerticalScrollBarVisibility="{TemplateBinding (ScrollViewer.VerticalScrollBarVisibility)}"
+                                          VerticalSnapPointsType="{TemplateBinding (ScrollViewer.VerticalSnapPointsType)}"
+                                          HorizontalSnapPointsType="{TemplateBinding (ScrollViewer.HorizontalSnapPointsType)}">
+                                <ItemsPresenter Name="PART_ItemsPresenter"
+                                                Margin="{TemplateBinding Padding}"
+                                                ItemsPanel="{TemplateBinding ItemsPanel}" />
+                            </ScrollViewer>
+                        </Border>
+                    </ControlTemplate>
+                </Setter>
+                <Style Selector="^:disabled /template/ Border#border">
+                    <Setter Property="Opacity" Value="{DynamicResource ThemeDisabledOpacity}" />
+                </Style>
+            </ControlTheme>
             <ControlTheme x:Key="{x:Type ListBox}"
                           TargetType="ListBox">
                 <Setter Property="Background" Value="{DynamicResource BackgroundMain}" />
@@ -149,6 +189,22 @@
                     <Setter Property="Opacity" Value="0.7" />
                 </Style>
             </ControlTheme>
+            
+            <ControlTheme x:Key="CommandButton"
+                          TargetType="Button"
+                          BasedOn="{StaticResource {x:Type Button}}">
+                <Setter Property="Background" Value="{StaticResource ButtonMain}" />
+                <Style Selector="^:pointerover /template/ ContentPresenter#PART_ContentPresenter">
+                    <Setter Property="Background" Value="{StaticResource ButtonHighlight}" />
+                </Style>
+                <Style Selector="^:pressed  /template/ ContentPresenter#PART_ContentPresenter">
+                    <Setter Property="Background" Value="{DynamicResource ButtonPressed}" />
+                    <Setter Property="Margin" Value="2" />
+                </Style>
+                <Style Selector="^:disabled">
+                    <Setter Property="Opacity" Value="0.7" />
+                </Style>
+            </ControlTheme>
 
             <ControlTheme x:Key="CheckBoxLampTheme"
                           TargetType="CheckBox">
@@ -174,6 +230,24 @@
                         </Grid>
                     </ControlTemplate>
                 </Setter>
+            </ControlTheme>
+            
+            <ControlTheme x:Key="VerticalSplitter" 
+                          TargetType="GridSplitter"
+                          BasedOn="{StaticResource {x:Type GridSplitter}}">
+                <Setter Property="VerticalAlignment" Value="Stretch"/>
+                <Setter Property="Background" Value="{StaticResource BackgroundSelected}"/>
+                <Setter Property="ResizeBehavior" Value="BasedOnAlignment"/>
+                <Setter Property="ResizeDirection" Value="Columns"/>
+            </ControlTheme>
+            
+            <ControlTheme x:Key="HorizontalSplitter"
+                          TargetType="GridSplitter"
+                          BasedOn="{StaticResource {x:Type GridSplitter}}">
+                <Setter Property="HorizontalAlignment" Value="Stretch"/>
+                <Setter Property="Background" Value="{StaticResource BackgroundSelected}"/>
+                <Setter Property="ResizeBehavior" Value="BasedOnAlignment"/>
+                <Setter Property="ResizeDirection" Value="Rows"/>
             </ControlTheme>
         </ResourceDictionary>
     </Styles.Resources>
@@ -204,6 +278,7 @@
                 </ListBox>
 
                 <Button Content="Prees me" />
+                <Button Content="Prees me too" Theme="{StaticResource CommandButton}" />
             </StackPanel>
         </Border>
     </Design.PreviewWith>
