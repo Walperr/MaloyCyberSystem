@@ -1,0 +1,77 @@
+﻿<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:models="clr-namespace:MaloyClient.Models"
+             xmlns:viewModels="clr-namespace:MaloyClient.ViewModels"
+             mc:Ignorable="d" d:DesignWidth="200" d:DesignHeight="450"
+             x:Class="MaloyClient.Views.DevicesView"
+             x:DataType="viewModels:IMainViewModel"
+             x:Name="Root">
+    <Grid RowDefinitions="Auto, *"
+          Background="{StaticResource BackgroundMain}">
+        <TabControl Grid.Row="0">
+            <TabItem Header="Devices">
+                <ListBox ItemsSource="{Binding AllDevices}"
+                         SelectedIndex="{Binding DeviceToConnectIndex, Mode=TwoWay}">
+                    <ListBox.ItemTemplate>
+                        <DataTemplate DataType="models:IDevice">
+                            <Grid Background="Transparent"
+                                  ColumnDefinitions="*,Auto">
+                                <TextBlock TextWrapping="NoWrap"
+                                           HorizontalAlignment="Left"
+                                           Margin="0,0,15,0">
+                                    <TextBlock Text="{Binding Name}" />
+                                    <TextBlock Text="{Binding SerialNumber}"
+                                               Foreground="{StaticResource TextSecondary}"
+                                               FontSize="12"
+                                               VerticalAlignment="Bottom" />
+                                </TextBlock>
+                                <CheckBox Grid.Column="1"
+                                          IsChecked="{Binding Online}"
+                                          Theme="{StaticResource CheckBoxLampTheme}" />
+                            </Grid>
+                        </DataTemplate>
+                    </ListBox.ItemTemplate>
+                </ListBox>
+            </TabItem>
+            <TabItem Header="Connected devices">
+                <ListBox ItemsSource="{Binding ConnectedDevices}"
+                         SelectedItem="{Binding SelectedDevice, Mode=TwoWay}">
+                    <ListBox.ItemTemplate>
+                        <DataTemplate DataType="models:IDevice">
+                            <Grid Background="Transparent"
+                                  ColumnDefinitions="*,Auto">
+                                <TextBlock TextWrapping="NoWrap"
+                                           HorizontalAlignment="Left"
+                                           Margin="0,0,15,0">
+                                <TextBlock.ContextMenu>
+                                    <ContextMenu>
+                                        <MenuItem Header="Open tab"
+                                                  Command="{Binding DataContext.OpenDeviceTabCommand, ElementName=Root}"
+                                                  CommandParameter="{Binding .}"/>
+                                    </ContextMenu>
+                                </TextBlock.ContextMenu>
+                                    <TextBlock Text="{Binding Name}" />
+                                    <TextBlock Text="{Binding SerialNumber}"
+                                               Foreground="{StaticResource TextSecondary}"
+                                               FontSize="12"
+                                               VerticalAlignment="Bottom" />
+                                </TextBlock>
+                                <CheckBox Grid.Column="1"
+                                          IsChecked="{Binding Online}"
+                                          Theme="{StaticResource CheckBoxLampTheme}" />
+                            </Grid>
+                        </DataTemplate>
+                    </ListBox.ItemTemplate>
+                </ListBox>
+            </TabItem>
+        </TabControl>
+
+        <Button Grid.Row="1"
+                Grid.Column="0"
+                Content="Connect device"
+                VerticalAlignment="Bottom"
+                Command="{Binding ConnectDeviceCommand}"/>
+    </Grid>
+</UserControl>

@@ -3,9 +3,8 @@
         xmlns:vm="using:MaloyClient.ViewModels"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        xmlns:view="clr-namespace:Avalonia.Plot.View;assembly=Avalonia.Plot"
         xmlns:views="clr-namespace:MaloyClient.Views"
-        mc:Ignorable="d" d:DesignWidth="300" d:DesignHeight="685"
+        mc:Ignorable="d" d:DesignWidth="900" d:DesignHeight="700"
         x:Class="MaloyClient.Views.MainWindow"
         x:DataType="vm:MainWindowViewModel"
         Icon="/Assets/avalonia-logo.ico"
@@ -16,11 +15,14 @@
         Background="{StaticResource BackgroundMain}">
 
     <Design.DataContext>
-        <!-- This only sets the DataContext for the previewer in an IDE,
-             to set the actual DataContext for runtime, set the DataContext property in code (look at App.axaml.cs) -->
         <vm:MainWindowViewModel/>
     </Design.DataContext>
 
-    <views:MainView/>
-
+    <Grid Margin="0,25,0,0">
+    <views:MainView IsVisible="{Binding !IsVisible, ElementName=LoginView}"
+                    DataContext="{Binding MainViewModel}"/>
+    <views:LoginView x:Name="LoginView"
+                     DataContext="{Binding LoginViewModel}"
+                     IsVisible="{Binding !IsConnected}"/>
+    </Grid>
 </Window>

@@ -1,0 +1,53 @@
+﻿<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:viewModels="clr-namespace:MaloyClient.ViewModels"
+             mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+             x:Class="MaloyClient.Views.LoginView"
+             x:DataType="viewModels:ILoginViewModel">
+    <Grid Background="{StaticResource BackgroundMain}">
+        <StackPanel Orientation="Vertical">
+            <TextBlock Theme="{StaticResource TitleText}"
+                       Text="Welcome to Maloy"/>
+            <TabControl HorizontalAlignment="Center">
+                <TabItem Header="Register">
+                    <Grid RowDefinitions="Auto, Auto, Auto, Auto">
+                        <TextBox Watermark="Username"
+                                 Text="{Binding Username}"/>
+                        <TextBox Grid.Row="1" 
+                                 Watermark="Password"
+                                 PasswordChar="*"
+                                 Text="{Binding Password}"/>
+                        <TextBox Grid.Row="2" 
+                                 Watermark="Repeat password"
+                                 PasswordChar="*"
+                                 Text="{Binding RepeatPassword}"/>
+                        <Button Grid.Row="3" 
+                                Width="180"
+                                Content="Register"
+                                Command="{Binding RegisterCommand}"/>
+                    </Grid>
+                </TabItem>
+                <TabItem Header="Login">
+                    <Grid RowDefinitions="Auto, Auto, Auto, Auto">
+                        <TextBox Watermark="Username"
+                                 Text="{Binding Username}"/>
+                        <TextBox Grid.Row="1" 
+                                 Watermark="Password"
+                                 PasswordChar="*"
+                                 Text="{Binding Password}"/>
+                        <Button Grid.Row="3" 
+                                Width="180"
+                                Content="Login"
+                                Command="{Binding LoginCommand}"/>
+                    </Grid>
+                </TabItem>
+            </TabControl>
+            <TextBlock Text="{Binding Error}"
+                       HorizontalAlignment="Center"
+                       IsVisible="{Binding Error, Converter={x:Static StringConverters.IsNotNullOrEmpty}}"
+                       Foreground="{StaticResource Offline}"/>
+        </StackPanel>
+    </Grid>
+</UserControl>

@@ -133,7 +133,7 @@
             <ControlTheme x:Key="{x:Type TextBlock}"
                           TargetType="TextBlock">
                 <Setter Property="TextWrapping" Value="NoWrap" />
-                <Setter Property="TextTrimming" Value="CharacterEllipsis"/>
+                <Setter Property="TextTrimming" Value="CharacterEllipsis" />
                 <Setter Property="FontFamily" Value="Verdana" />
                 <Setter Property="Foreground" Value="{StaticResource TextMain}" />
                 <Setter Property="FontWeight" Value="Regular" />
@@ -189,7 +189,7 @@
                     <Setter Property="Opacity" Value="0.7" />
                 </Style>
             </ControlTheme>
-            
+
             <ControlTheme x:Key="CommandButton"
                           TargetType="Button"
                           BasedOn="{StaticResource {x:Type Button}}">
@@ -231,23 +231,86 @@
                     </ControlTemplate>
                 </Setter>
             </ControlTheme>
-            
-            <ControlTheme x:Key="VerticalSplitter" 
+
+            <ControlTheme x:Key="VerticalSplitter"
                           TargetType="GridSplitter"
                           BasedOn="{StaticResource {x:Type GridSplitter}}">
-                <Setter Property="VerticalAlignment" Value="Stretch"/>
-                <Setter Property="Background" Value="{StaticResource BackgroundSelected}"/>
-                <Setter Property="ResizeBehavior" Value="BasedOnAlignment"/>
-                <Setter Property="ResizeDirection" Value="Columns"/>
+                <Setter Property="VerticalAlignment" Value="Stretch" />
+                <Setter Property="Background" Value="{StaticResource BackgroundSelected}" />
+                <Setter Property="ResizeBehavior" Value="BasedOnAlignment" />
+                <Setter Property="ResizeDirection" Value="Columns" />
             </ControlTheme>
-            
+
             <ControlTheme x:Key="HorizontalSplitter"
                           TargetType="GridSplitter"
                           BasedOn="{StaticResource {x:Type GridSplitter}}">
-                <Setter Property="HorizontalAlignment" Value="Stretch"/>
-                <Setter Property="Background" Value="{StaticResource BackgroundSelected}"/>
-                <Setter Property="ResizeBehavior" Value="BasedOnAlignment"/>
-                <Setter Property="ResizeDirection" Value="Rows"/>
+                <Setter Property="HorizontalAlignment" Value="Stretch" />
+                <Setter Property="Background" Value="{StaticResource BackgroundSelected}" />
+                <Setter Property="ResizeBehavior" Value="BasedOnAlignment" />
+                <Setter Property="ResizeDirection" Value="Rows" />
+            </ControlTheme>
+            
+            <ControlTheme TargetType="TextBox"
+                          x:Key="{x:Type TextBox}">
+                <Setter Property="Width" Value="180"/>
+                <Setter Property="Height" Value="30"/>
+                <Setter Property="VerticalContentAlignment" Value="Center"/>
+                <Setter Property="UseFloatingWatermark" Value="True"/>
+                <Setter Property="HorizontalAlignment" Value="Center"/>
+                <Setter Property="FontFamily" Value="Verdana" />
+                <Setter Property="Background" Value="{StaticResource BackgroundHighlight}"/>
+                <Setter Property="CaretBrush" Value="{StaticResource TextMain}"/>
+                <Setter Property="Foreground" Value="{StaticResource TextMain}"/>
+                <Setter Property="SelectionBrush" Value="DimGray"/>
+                <Setter Property="Margin" Value="5"/>
+                <Setter Property="Template">
+                    <ControlTemplate TargetType="TextBox">
+                        <Border CornerRadius="10"
+                                Background="{TemplateBinding Background}">
+                            <Grid Background="Transparent">
+                                <Rectangle StrokeThickness="1"/>
+                                
+                                <TextPresenter Name="PART_TextPresenter"
+                                               Margin="10,0,0,0"
+                                               CaretBrush="{TemplateBinding CaretBrush}"
+                                               CaretIndex="{TemplateBinding CaretIndex}"
+                                               LineHeight="{TemplateBinding LineHeight}"
+                                               LetterSpacing="{TemplateBinding LetterSpacing}"
+                                               PasswordChar="{TemplateBinding PasswordChar}"
+                                               RevealPassword="{TemplateBinding RevealPassword}"
+                                               SelectionBrush="{TemplateBinding SelectionBrush}"
+                                               SelectionEnd="{TemplateBinding SelectionEnd}"
+                                               SelectionForegroundBrush="{TemplateBinding SelectionForegroundBrush}"
+                                               SelectionStart="{TemplateBinding SelectionStart}"
+                                               Text="{TemplateBinding Text,Mode=TwoWay}"
+                                               FontFamily="Verdana"
+                                               TextAlignment="{TemplateBinding TextAlignment}"
+                                               TextWrapping="{TemplateBinding TextWrapping}"
+                                               VerticalAlignment="Center"
+                                               HorizontalAlignment="Left"/>
+                                
+                                <TextBlock IsHitTestVisible="False"
+                                           Text="{TemplateBinding Watermark}"
+                                           VerticalAlignment="Center"
+                                           HorizontalAlignment="Left"
+                                           Margin="10,0,0,0"
+                                           FontSize="{TemplateBinding FontSize}"
+                                           Opacity="0.5"
+                                           Foreground="{StaticResource TextMain}">
+                                    <TextBlock.IsVisible>
+                                        <MultiBinding Converter="{x:Static BoolConverters.And}">
+                                            <Binding Path="UseFloatingWatermark"
+                                                     RelativeSource="{RelativeSource TemplatedParent}" />
+                                            <Binding Converter="{x:Static StringConverters.IsNullOrEmpty}"
+                                                     Path="Text"
+                                                     ElementName="PART_TextPresenter" />
+                                        </MultiBinding>
+                                    </TextBlock.IsVisible>
+                                </TextBlock>
+                            </Grid>
+                        </Border>
+                    </ControlTemplate>
+                </Setter>
             </ControlTheme>
         </ResourceDictionary>
     </Styles.Resources>
@@ -272,13 +335,13 @@
                         <system:String>Item 2</system:String>
                         <system:String>Item 3</system:String>
                         <system:String>Item 4</system:String>
-                        <system:String>Item 5</system:String>
-                        <system:String>Item 6</system:String>
                     </ListBox.Items>
                 </ListBox>
 
-                <Button Content="Prees me" />
-                <Button Content="Prees me too" Theme="{StaticResource CommandButton}" />
+                <Button Content="Press me" />
+                <Button Content="Press me too" Theme="{StaticResource CommandButton}" />
+
+                <TextBox Watermark="Type something" />
             </StackPanel>
         </Border>
     </Design.PreviewWith>
