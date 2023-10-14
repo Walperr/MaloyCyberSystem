@@ -1,0 +1,22 @@
+﻿<Border xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:view="clr-namespace:Avalonia.Plot.View"
+        mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+        x:Class="Avalonia.Plot.View.Plot"
+        ClipToBounds="True"
+        x:Name="Root">
+    <Panel ClipToBounds="True">
+        <Border CornerRadius="{Binding CornerRadius, ElementName=Root}"
+                Margin="{Binding BorderThickness, ElementName=Root}"
+                ClipToBounds="True">
+            <view:PlotArea />
+        </Border>
+        <Border CornerRadius="{Binding CornerRadius, ElementName=Root}"
+                BorderThickness="{Binding BorderThickness, ElementName=Root}"
+                BorderBrush="{Binding BorderBrush, ElementName=Root}"
+                Background="Transparent"
+                IsHitTestVisible="False"/>
+    </Panel>
+</Border>

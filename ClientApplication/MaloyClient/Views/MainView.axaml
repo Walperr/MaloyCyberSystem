@@ -3,106 +3,72 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              xmlns:viewModels="clr-namespace:MaloyClient.ViewModels"
-             mc:Ignorable="d" d:DesignWidth="300" d:DesignHeight="685"
-             x:Class="MaloyClient.Views.MainView">
-    <UserControl.Styles>
-        <Style Selector="TextBlock">
-            <Setter Property="TextWrapping" Value="Wrap" />
-            <Setter Property="FontFamily" Value="Verdana" />
-            <Setter Property="Foreground" Value="White" />
-            <Setter Property="FontWeight" Value="Bold" />
-            <Setter Property="FontSize" Value="16" />
-            <Setter Property="HorizontalAlignment" Value="Center" />
-        </Style>
-    </UserControl.Styles>
-    <Grid Background="#FF495156">
-        <Grid RowDefinitions="*, *, *, *">
-            <TextBlock Grid.Row="1"
-                       Margin="0,10"
-                       Text="Welcome to Maloy" />
-
-            <StackPanel Grid.Row="2" VerticalAlignment="Center">
-                <Button
-                    BorderThickness="0"
-                    CornerRadius="10"
-                    Width="200"
-                    Height="50"
-                    Background="Transparent"
-                    HorizontalAlignment="Center">
-                    <TextBlock Text="Register" VerticalAlignment="Center" />
-                </Button>
-                <TextBlock Text="or" />
-                <Button
-                    BorderThickness="0"
-                    CornerRadius="10"
-                    Width="200"
-                    Height="50"
-                    Background="Transparent"
-                    HorizontalAlignment="Center">
-                    <TextBlock Text="Log in" VerticalAlignment="Center" />
-                </Button>
-            </StackPanel>
-        </Grid>
-        
-        <Grid Background="#FF495156"
-              RowDefinitions="Auto, *">
-            <TextBlock Text="Devices" Margin="0, 50"/>
-            
-            <ListBox Grid.Row="1"
-                     Background="Transparent">
+             xmlns:view="clr-namespace:Avalonia.Plot.View;assembly=Avalonia.Plot"
+             mc:Ignorable="d" d:DesignWidth="600" d:DesignHeight="400"
+             x:Class="MaloyClient.Views.MainView"
+             x:DataType="viewModels:MainWindowViewModel">
+    <Grid Background="{StaticResource BackgroundMain}">
+        <Grid Background="{StaticResource BackgroundMain}"
+              RowDefinitions="Auto, *"
+              ColumnDefinitions="Auto, Auto, *">
+            <TextBlock Grid.Row="0"
+                       Grid.Column="0"
+                       Text="Devices"
+                       Theme="{StaticResource TitleText}" />
+            <ListBox Grid.Row="1" Grid.Column="0">
                 <ListBox.ItemTemplate>
                     <DataTemplate DataType="viewModels:Device">
-                        <Grid>
-                            <StackPanel Orientation="Horizontal">
-                                <TextBlock Text="{Binding Name}" HorizontalAlignment="Left" VerticalAlignment="Bottom"/>
-                                <TextBlock Text="{Binding DeviceID}" Foreground="#FF80848E" FontSize="12" VerticalAlignment="Bottom" Margin="15,0"/>
-                            </StackPanel>
-                            <CheckBox HorizontalAlignment="Right">
-                                <CheckBox.Theme>
-                                    <ControlTheme TargetType="CheckBox">
-                                        <Setter Property="Template">
-                                            <ControlTemplate TargetType="CheckBox">
-                                                <Grid>
-                                                    <Ellipse Width="26"
-                                                             Height="26"
-                                                             Stroke="#FF80848E"
-                                                             Fill="#01FFFFFF"
-                                                             HorizontalAlignment="Center"
-                                                             VerticalAlignment="Center"
-                                                             StrokeThickness="2"/>
-                                                    <Ellipse Width="26"
-                                                             Height="26"
-                                                             Stroke="Transparent"
-                                                             Fill="GreenYellow"
-                                                             HorizontalAlignment="Center"
-                                                             VerticalAlignment="Center"
-                                                             StrokeThickness="6"
-                                                             IsVisible="{TemplateBinding IsChecked}"/>
-                                                </Grid>
-                                            </ControlTemplate>
-                                        </Setter>
-                                    </ControlTheme>
-                                </CheckBox.Theme>
+                        <Grid ColumnDefinitions="*,Auto">
+                            <TextBlock TextWrapping="NoWrap"
+                                       HorizontalAlignment="Left"
+                                       Margin="0,0,15,0">
+                                <TextBlock Text="{Binding Name}" />
+                                <TextBlock Text="{Binding DeviceID}"
+                                           Foreground="{StaticResource TextSecondary}"
+                                           FontSize="12"
+                                           VerticalAlignment="Bottom" />
+                            </TextBlock>
+                            <CheckBox Grid.Column="1"
+                                      IsChecked="{Binding Online}"
+                                      Theme="{StaticResource CheckBoxLampTheme}">
                             </CheckBox>
                         </Grid>
                     </DataTemplate>
                 </ListBox.ItemTemplate>
                 <ListBox.Items>
-                    <viewModels:Device Name="Device1" DeviceID="Sn001"/>
-                    <viewModels:Device Name="Device2" DeviceID="Sn002"/>
-                    <viewModels:Device Name="Device3" DeviceID="Sn003"/>
-                    <viewModels:Device Name="Device4" DeviceID="Sn004"/>
+                    <viewModels:Device Name="Device1" DeviceID="Sn001" Online="False" />
+                    <viewModels:Device Name="Device2" DeviceID="Sn002" Online="True" />
+                    <viewModels:Device Name="Device3" DeviceID="Sn003" Online="True" />
+                    <viewModels:Device Name="Device4" DeviceID="Sn004" Online="False" />
                 </ListBox.Items>
-                <ListBox.ItemContainerTheme>
-                    <ControlTheme TargetType="ListBoxItem" BasedOn="{StaticResource {x:Type ListBoxItem}}">
-                        <Setter Property="Background" Value="Transparent"/>
-                        <Style Selector="^ListBoxItem:selected">
-                            <Setter Property="Background" Value="Gray"/>
-                        </Style>
-                    </ControlTheme>
-                </ListBox.ItemContainerTheme>
             </ListBox>
-        </Grid>
 
+            <Button Grid.Row="1"
+                    Grid.Column="0"
+                    Content="Connect device"
+                    VerticalAlignment="Bottom" />
+
+            <GridSplitter Grid.Row="0"
+                          Grid.RowSpan="2"
+                          Grid.Column="1"
+                          VerticalAlignment="Stretch"
+                          Background="{StaticResource BackgroundSelected}" />
+
+            <TabControl Grid.Row="1"
+                        Grid.Column="2">
+                <TabItem Header="График">
+                    <view:Plot CornerRadius="12"
+                               Margin="10"
+                               BorderBrush="{StaticResource BackgroundSelected}"
+                               BorderThickness="2"
+                               DataContext="{Binding Plot}" />
+                </TabItem>
+                <TabItem Header="еще какая-то фигня">
+                    <TextBlock Text="Здесь действительно какая-то фигня"
+                               Theme="{StaticResource TitleText}"></TextBlock>
+                </TabItem>
+            </TabControl>
+
+        </Grid>
     </Grid>
 </UserControl>

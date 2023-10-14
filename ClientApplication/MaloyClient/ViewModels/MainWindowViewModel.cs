@@ -15,10 +15,13 @@ public class MainWindowViewModel : ViewModelBase
     {
         Plot = PlotFactory.CreatePlot();
 
-        var xMin = -1;
-        var xStep = 0.1;
+        Plot.Background = Color.FromUInt32(0xFF353340);
+        Plot.GridLinesColor = Color.FromUInt32(0xFF22202F);
 
-        var x = Enumerable.Range(0, 100000).Select(i => xMin + xStep * i).ToArray();
+        var xMin = -Math.PI;
+        var xStep = Math.PI * 2 / 1000000;
+
+        var x = Enumerable.Range(0, 1000000).Select(i => xMin + xStep * i).ToArray();
         var y = x.Select(Math.Sin).ToArray();
         
         var series = PlotFactory.CreateSeries();
@@ -26,7 +29,7 @@ public class MainWindowViewModel : ViewModelBase
         series.XValues = x;
         series.YValues = y;
         
-        series.Color = Colors.Red;
+        series.Color = Colors.Yellow;
         series.LineStyle = LineStyle.Solid;
         
         Plot.AddSeries(series);
@@ -38,8 +41,7 @@ public class MainWindowViewModel : ViewModelBase
         series.XValues = x;
         series.YValues = y;
         
-        series.Color = Colors.Blue;
-        // series.LineStyle = LineStyle.Dash;
+        series.Color = Colors.Orange;
         series.Thickness = 2;
         
         Plot.AddSeries(series);
@@ -51,33 +53,12 @@ public class MainWindowViewModel : ViewModelBase
         series.XValues = x;
         series.YValues = y;
         
-        series.Color = Colors.Green;
-        // series.LineStyle = LineStyle.DashDotDot;
+        series.Color = Colors.CadetBlue;
         series.Thickness = 2;
-        
-        Plot.AddSeries(series);
-        
-        y = x.Select(d => Math.Cos(d) * 0.5).ToArray();
-        
-        series = PlotFactory.CreateSeries();
-
-        series.XValues = x;
-        series.YValues = y;
-        
-        series.Color = Colors.Brown;
-        // series.LineStyle = LineStyle.DashDotDot;
-        series.Thickness = 3;
         
         Plot.AddSeries(series);
        
         Plot.AutoScale = false;
-
-        var fonts = FontManager.Current.SystemFonts;
-
-        foreach (var font in fonts)
-        {
-            Console.WriteLine(font.Name);
-        }
     }
     
     

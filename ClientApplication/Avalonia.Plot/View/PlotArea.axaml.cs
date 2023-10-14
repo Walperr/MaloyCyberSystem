@@ -56,13 +56,7 @@ public partial class PlotArea : UserControl
     {
         if (!IsVisible)
             return;
-        var stopwatch = Stopwatch.StartNew();
-        
-        stopwatch.Restart();
         InvalidateVisual();
-        stopwatch.Stop();
-
-        Console.WriteLine($"Plot forward render elapsed: {stopwatch.Elapsed}");
     }
 
     private void PlotOnRedrawSuggested(object? sender, EventArgs e)
@@ -79,16 +73,13 @@ public partial class PlotArea : UserControl
     private void OnRender(SKCanvas canvas)
     {
         if (_plot is null)
-        {
-            canvas.Clear(((SolidColorBrush)Background!)?.Color.ToSKColor() ?? SKColors.White);
             return;
-        }
 
         canvas.Clear(_plot.Background.ToSKColor());
 
         var plotSeries = _plot.Series;
 
-        var bounds = Bounds.ToSKRect();
+        var bounds = canvas.LocalClipBounds;
 
         var xMin = _plot.XMin;
         var xMax = _plot.XMax;
@@ -333,10 +324,14 @@ public partial class PlotArea : UserControl
 
         _startRect = new Rect(_plot.XMin, _plot.YMin, _plot.XMax - _plot.XMin, _plot.YMax - _plot.YMin);
         _startDragPoint = e.GetPosition(this);
+
+        e.Handled = true;
     }
 
     protected override void OnPointerReleased(PointerReleasedEventArgs e)
     {
         _pointerCaptured = false;
+        
+        e.Handled = true;
     }
 }

@@ -1,0 +1,26 @@
+﻿<Styles xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+    <Styles.Resources>
+        <Color x:Key="BackgroundMainColor">#FF272537</Color>
+        <Color x:Key="BackgroundHighlightColor">#FF353340</Color>
+        <Color x:Key="BackgroundSelectedColor">#FF22202F</Color>
+        <Color x:Key="TextMainColor">#FFFFFFFF</Color>
+        <Color x:Key="TextSecondaryColor">#FF80848E</Color>
+        <Color x:Key="OnlineColor">GreenYellow</Color>
+        <Color x:Key="OfflineColor">Red</Color>
+        <Color x:Key="BackgroundAlterColor">#FF3AA0FF</Color>
+        <Color x:Key="BackgroundAlterHighlightColor">#FF5BC3FF</Color>
+        <Color x:Key="BackgroundAlterPressedColor">#FF2989EE</Color>
+        
+        <SolidColorBrush x:Key="BackgroundMain" Color="{StaticResource BackgroundMainColor}"/>
+        <SolidColorBrush x:Key="BackgroundHighlight" Color="{StaticResource BackgroundHighlightColor}"/>
+        <SolidColorBrush x:Key="BackgroundSelected" Color="{StaticResource BackgroundSelectedColor}"/>
+        <SolidColorBrush x:Key="TextMain" Color="{StaticResource TextMainColor}"/>
+        <SolidColorBrush x:Key="TextSecondary" Color="{StaticResource TextSecondaryColor}"/>
+        <SolidColorBrush x:Key="Online" Color="{StaticResource OnlineColor}"/>
+        <SolidColorBrush x:Key="Offline" Color="{StaticResource OfflineColor}"/>
+        <SolidColorBrush x:Key="BackgroundAlter" Color="{StaticResource BackgroundAlterColor}"/>
+        <SolidColorBrush x:Key="BackgroundAlterHighlight" Color="{StaticResource BackgroundAlterHighlightColor}"/>
+        <SolidColorBrush x:Key="BackgroundAlterPressed" Color="{StaticResource BackgroundAlterPressedColor}"/>
+    </Styles.Resources>
+</Styles>

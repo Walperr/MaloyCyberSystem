@@ -1,0 +1,210 @@
+﻿<Styles xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:system="clr-namespace:System;assembly=System.Runtime">
+
+    <Styles.Resources>
+        <ResourceDictionary>
+            <ControlTheme x:Key="{x:Type ListBox}"
+                          TargetType="ListBox">
+                <Setter Property="Background" Value="{DynamicResource BackgroundMain}" />
+                <Setter Property="BorderBrush" Value="Transparent" />
+                <Setter Property="BorderThickness" Value="0" />
+                <Setter Property="Padding" Value="4" />
+                <Setter Property="ScrollViewer.HorizontalScrollBarVisibility" Value="Disabled" />
+                <Setter Property="ScrollViewer.VerticalScrollBarVisibility" Value="Auto" />
+                <Setter Property="ScrollViewer.IsScrollChainingEnabled" Value="True" />
+                <Setter Property="ItemTemplate">
+                    <DataTemplate>
+                        <TextBlock Text="{Binding DataContext, RelativeSource={RelativeSource Self}}" />
+                    </DataTemplate>
+                </Setter>
+                <Setter Property="Template">
+                    <ControlTemplate>
+                        <Border Name="border"
+                                BorderBrush="{TemplateBinding BorderBrush}"
+                                BorderThickness="{TemplateBinding BorderThickness}"
+                                CornerRadius="{TemplateBinding CornerRadius}">
+                            <ScrollViewer Name="PART_ScrollViewer"
+                                          AllowAutoHide="{TemplateBinding (ScrollViewer.AllowAutoHide)}"
+                                          BringIntoViewOnFocusChange="{TemplateBinding (ScrollViewer.BringIntoViewOnFocusChange)}"
+                                          Background="{TemplateBinding Background}"
+                                          HorizontalScrollBarVisibility="{TemplateBinding (ScrollViewer.HorizontalScrollBarVisibility)}"
+                                          IsScrollChainingEnabled="{TemplateBinding (ScrollViewer.IsScrollChainingEnabled)}"
+                                          VerticalScrollBarVisibility="{TemplateBinding (ScrollViewer.VerticalScrollBarVisibility)}"
+                                          VerticalSnapPointsType="{TemplateBinding (ScrollViewer.VerticalSnapPointsType)}"
+                                          HorizontalSnapPointsType="{TemplateBinding (ScrollViewer.HorizontalSnapPointsType)}">
+                                <ItemsPresenter Name="PART_ItemsPresenter"
+                                                Margin="{TemplateBinding Padding}"
+                                                ItemsPanel="{TemplateBinding ItemsPanel}" />
+                            </ScrollViewer>
+                        </Border>
+                    </ControlTemplate>
+                </Setter>
+                <Style Selector="^:disabled /template/ Border#border">
+                    <Setter Property="Opacity" Value="{DynamicResource ThemeDisabledOpacity}" />
+                </Style>
+            </ControlTheme>
+
+            <ControlTheme x:Key="{x:Type ListBoxItem}"
+                          TargetType="ListBoxItem">
+                <Setter Property="Background" Value="Transparent" />
+                <Setter Property="BorderBrush" Value="Transparent" />
+                <Setter Property="BorderThickness" Value="0" />
+                <Setter Property="Padding" Value="10" />
+                <Setter Property="Template">
+                    <ControlTemplate>
+                        <Border Background="{TemplateBinding Background}"
+                                BorderBrush="{TemplateBinding BorderBrush}"
+                                BorderThickness="{TemplateBinding BorderThickness}">
+                            <ContentPresenter Name="PART_ContentPresenter"
+                                              Padding="{TemplateBinding Padding}"
+                                              HorizontalContentAlignment="{TemplateBinding HorizontalContentAlignment}"
+                                              VerticalContentAlignment="{TemplateBinding VerticalContentAlignment}"
+                                              Background="Transparent"
+                                              BorderBrush="Transparent"
+                                              BorderThickness="0"
+                                              Content="{TemplateBinding Content}"
+                                              ContentTemplate="{TemplateBinding ContentTemplate}" />
+                        </Border>
+                    </ControlTemplate>
+                </Setter>
+
+                <Style Selector="^:pointerover /template/ Border">
+                    <Setter Property="Background" Value="{StaticResource BackgroundHighlight}" />
+                </Style>
+
+                <Style Selector="^:selected /template/ Border">
+                    <Setter Property="Background" Value="{DynamicResource BackgroundSelected}" />
+                </Style>
+
+                <Style Selector="^:selected:focus /template/ Border">
+                    <Setter Property="Background" Value="{DynamicResource BackgroundSelected}" />
+                </Style>
+
+                <Style Selector="^:selected:pointerover /template/ Border">
+                    <Setter Property="Background" Value="{DynamicResource BackgroundSelected}" />
+                </Style>
+
+                <Style Selector="^:selected:focus:pointerover /template/ Border">
+                    <Setter Property="Background" Value="{DynamicResource BackgroundSelected}" />
+                </Style>
+            </ControlTheme>
+
+            <ControlTheme x:Key="{x:Type TextBlock}"
+                          TargetType="TextBlock">
+                <Setter Property="TextWrapping" Value="NoWrap" />
+                <Setter Property="TextTrimming" Value="CharacterEllipsis"/>
+                <Setter Property="FontFamily" Value="Verdana" />
+                <Setter Property="Foreground" Value="{StaticResource TextMain}" />
+                <Setter Property="FontWeight" Value="Regular" />
+                <Setter Property="FontSize" Value="16" />
+                <Setter Property="HorizontalAlignment" Value="Left" />
+            </ControlTheme>
+
+            <ControlTheme x:Key="TitleText"
+                          BasedOn="{StaticResource {x:Type TextBlock}}"
+                          TargetType="TextBlock">
+                <Setter Property="HorizontalAlignment" Value="Center" />
+                <Setter Property="Margin" Value="0,50" />
+                <Setter Property="FontWeight" Value="Bold" />
+                <Setter Property="FontSize" Value="18" />
+            </ControlTheme>
+
+            <ControlTheme x:Key="{x:Type Button}"
+                          TargetType="Button">
+                <Setter Property="Background" Value="{DynamicResource BackgroundAlter}" />
+                <Setter Property="BorderBrush" Value="Transparent" />
+                <Setter Property="BorderThickness" Value="0" />
+                <Setter Property="Foreground" Value="{DynamicResource TextMain}" />
+                <Setter Property="CornerRadius" Value="12" />
+                <Setter Property="HorizontalContentAlignment" Value="Center" />
+                <Setter Property="VerticalContentAlignment" Value="Center" />
+                <Setter Property="Margin" Value="10,15" />
+                <Setter Property="Padding" Value="4" />
+                <Setter Property="Height" Value="35" />
+                <Setter Property="Template">
+                    <ControlTemplate>
+                        <ContentPresenter Name="PART_ContentPresenter"
+                                          Padding="{TemplateBinding Padding}"
+                                          HorizontalContentAlignment="{TemplateBinding HorizontalContentAlignment}"
+                                          VerticalContentAlignment="{TemplateBinding VerticalContentAlignment}"
+                                          Background="{TemplateBinding Background}"
+                                          BorderBrush="{TemplateBinding BorderBrush}"
+                                          BorderThickness="{TemplateBinding BorderThickness}"
+                                          Content="{TemplateBinding Content}"
+                                          ContentTemplate="{TemplateBinding ContentTemplate}"
+                                          CornerRadius="{TemplateBinding CornerRadius}"
+                                          RecognizesAccessKey="True"
+                                          TextElement.Foreground="{TemplateBinding Foreground}" />
+                    </ControlTemplate>
+                </Setter>
+                <Style Selector="^:pointerover /template/ ContentPresenter#PART_ContentPresenter">
+                    <Setter Property="Background" Value="{DynamicResource BackgroundAlterHighlight}" />
+                </Style>
+                <Style Selector="^:pressed  /template/ ContentPresenter#PART_ContentPresenter">
+                    <Setter Property="Background" Value="{DynamicResource BackgroundAlterPressed}" />
+                    <Setter Property="Margin" Value="2" />
+                </Style>
+                <Style Selector="^:disabled">
+                    <Setter Property="Opacity" Value="0.7" />
+                </Style>
+            </ControlTheme>
+
+            <ControlTheme x:Key="CheckBoxLampTheme"
+                          TargetType="CheckBox">
+                <Setter Property="IsEnabled" Value="False" />
+                <Setter Property="Template">
+                    <ControlTemplate TargetType="CheckBox">
+                        <Grid>
+                            <Ellipse Width="18"
+                                     Height="18"
+                                     Fill="{StaticResource Offline}"
+                                     HorizontalAlignment="Center"
+                                     VerticalAlignment="Center"
+                                     StrokeThickness="2"
+                                     IsVisible="{Binding !IsChecked, RelativeSource={RelativeSource TemplatedParent}}" />
+                            <Ellipse Width="18"
+                                     Height="18"
+                                     Stroke="Transparent"
+                                     Fill="{StaticResource Online}"
+                                     HorizontalAlignment="Center"
+                                     VerticalAlignment="Center"
+                                     StrokeThickness="2"
+                                     IsVisible="{TemplateBinding IsChecked}" />
+                        </Grid>
+                    </ControlTemplate>
+                </Setter>
+            </ControlTheme>
+        </ResourceDictionary>
+    </Styles.Resources>
+
+    <Design.PreviewWith>
+        <Border Width="200"
+                Height="500">
+            <StackPanel Orientation="Vertical"
+                        Background="{StaticResource BackgroundMain}">
+                <TextBlock Text="Title" Theme="{StaticResource TitleText}" />
+                <ListBox>
+                    <ListBox.ItemTemplate>
+                        <DataTemplate DataType="system:String">
+                            <StackPanel Orientation="Horizontal">
+                                <TextBlock Text="{Binding .}" />
+                                <CheckBox Theme="{StaticResource CheckBoxLampTheme}" IsChecked="True" Margin="50,0" />
+                            </StackPanel>
+                        </DataTemplate>
+                    </ListBox.ItemTemplate>
+                    <ListBox.Items>
+                        <system:String>Item 1</system:String>
+                        <system:String>Item 2</system:String>
+                        <system:String>Item 3</system:String>
+                        <system:String>Item 4</system:String>
+                        <system:String>Item 5</system:String>
+                        <system:String>Item 6</system:String>
+                    </ListBox.Items>
+                </ListBox>
+
+                <Button Content="Prees me" />
+            </StackPanel>
+        </Border>
+    </Design.PreviewWith>
+</Styles>
