@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Collections.Specialized;
 using System.Linq;
 using System.Windows.Input;
 using DynamicData;
@@ -24,6 +25,7 @@ internal sealed class MainViewModel : ViewModelBase, IMainViewModel
     private IDevice? _selectedDevice;
     private IDeviceTabViewModel? _selectedTab;
     private ICommand? _openDeviceTabCommand;
+    private Notification? _lastNotification;
 
     public MainViewModel(ILoginViewModel loginViewModel)
     {
@@ -50,6 +52,8 @@ internal sealed class MainViewModel : ViewModelBase, IMainViewModel
         _commands.Add(new Command("Turn on rele", "invoke rele", false));
         _commands.Add(new Command("Restart", "restart", false));
         _commands.Add(new Command("Print value", "print value", false));
+        
+        _notifications.CollectionChanged += NotificationsOnCollectionChanged;
 
         _notifications.Add(new Notification("SN001", "Started"));
         _notifications.Add(new Notification("SN002", "Started"));
@@ -57,6 +61,17 @@ internal sealed class MainViewModel : ViewModelBase, IMainViewModel
         _notifications.Add(new Notification("SN005", "Started"));
         _notifications.Add(new Notification("SN005", "Message 1"));
         _notifications.Add(new Notification("SN002", "Hello, world!"));
+    }
+
+    private void NotificationsOnCollectionChanged(object? sender, NotifyCollectionChangedEventArgs e)
+    {
+        LastNotification = _notifications.LastOrDefault();
+    }
+
+    public Notification? LastNotification
+    {
+        get => _lastNotification;
+        set => this.RaiseAndSetIfChanged(ref _lastNotification, value);
     }
 
     public string Username => _loginViewModel.Username;
@@ -78,8 +93,7 @@ internal sealed class MainViewModel : ViewModelBase, IMainViewModel
         set => this.RaiseAndSetIfChanged(ref _selectedDevice, value);
     }
 
-    public int DeviceToConnectIndex
-    {
+    public int DeviceToConnectIndex    {
         get => _deviceToConnectIndex;
         set => this.RaiseAndSetIfChanged(ref _deviceToConnectIndex, value);
     }

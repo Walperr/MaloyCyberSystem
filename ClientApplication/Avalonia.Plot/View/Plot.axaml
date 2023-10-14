@@ -7,16 +7,8 @@
         x:Class="Avalonia.Plot.View.Plot"
         ClipToBounds="True"
         x:Name="Root">
-    <Panel ClipToBounds="True">
-        <Border CornerRadius="{Binding CornerRadius, ElementName=Root}"
-                Margin="{Binding BorderThickness, ElementName=Root}"
-                ClipToBounds="True">
-            <view:PlotArea />
-        </Border>
-        <Border CornerRadius="{Binding CornerRadius, ElementName=Root}"
-                BorderThickness="{Binding BorderThickness, ElementName=Root}"
-                BorderBrush="{Binding BorderBrush, ElementName=Root}"
-                Background="Transparent"
-                IsHitTestVisible="False"/>
-    </Panel>
+    <Canvas ClipToBounds="True">
+        <view:PlotArea Width="{Binding Bounds.Width, ElementName=Root}"
+                       Height="{Binding Bounds.Height, ElementName=Root}"/>
+    </Canvas>
 </Border>

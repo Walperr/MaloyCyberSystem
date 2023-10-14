@@ -21,6 +21,14 @@
     <Grid Margin="0,25,0,0">
     <views:MainView IsVisible="{Binding !IsVisible, ElementName=LoginView}"
                     DataContext="{Binding MainViewModel}"/>
+    <!-- Todo: make it hypertext button -->
+    <Button Width="100"
+            Height="30"
+            Margin="5"
+            VerticalAlignment="Top"
+            HorizontalAlignment="Right"
+            Content="Log out"
+            Command="{Binding LoginViewModel.DisconnectCommand}"/>
     <views:LoginView x:Name="LoginView"
                      DataContext="{Binding LoginViewModel}"
                      IsVisible="{Binding !IsConnected}"/>
