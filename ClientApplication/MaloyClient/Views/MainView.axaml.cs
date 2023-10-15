@@ -5,7 +5,7 @@ using Avalonia.Markup.Xaml;
 
 namespace MaloyClient.Views;
 
-public partial class MainView : UserControl
+public sealed partial class MainView : UserControl
 {
     public MainView()
     {

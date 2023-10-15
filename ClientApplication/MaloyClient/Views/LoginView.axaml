@@ -9,45 +9,49 @@
     <Grid Background="{StaticResource BackgroundMain}">
         <StackPanel Orientation="Vertical">
             <TextBlock Theme="{StaticResource TitleText}"
-                       Text="Welcome to Maloy"/>
+                       Text="Welcome to Maloy" />
+            <TextBox Watermark="Enter server address"
+                     Text="{Binding ServerIP}" />
+            <TextBox Watermark="Enter port"
+                     Text="{Binding Port}" />
             <TabControl HorizontalAlignment="Center">
                 <TabItem Header="Register">
                     <Grid RowDefinitions="Auto, Auto, Auto, Auto">
                         <TextBox Watermark="Username"
-                                 Text="{Binding Username}"/>
-                        <TextBox Grid.Row="1" 
+                                 Text="{Binding Username}" />
+                        <TextBox Grid.Row="1"
                                  Watermark="Password"
                                  PasswordChar="*"
-                                 Text="{Binding Password}"/>
-                        <TextBox Grid.Row="2" 
+                                 Text="{Binding Password}" />
+                        <TextBox Grid.Row="2"
                                  Watermark="Repeat password"
                                  PasswordChar="*"
-                                 Text="{Binding RepeatPassword}"/>
-                        <Button Grid.Row="3" 
+                                 Text="{Binding RepeatPassword}" />
+                        <Button Grid.Row="3"
                                 Width="180"
                                 Content="Register"
-                                Command="{Binding RegisterCommand}"/>
+                                Command="{Binding RegisterCommand}" />
                     </Grid>
                 </TabItem>
                 <TabItem Header="Login">
                     <Grid RowDefinitions="Auto, Auto, Auto, Auto">
                         <TextBox Watermark="Username"
-                                 Text="{Binding Username}"/>
-                        <TextBox Grid.Row="1" 
+                                 Text="{Binding Username}" />
+                        <TextBox Grid.Row="1"
                                  Watermark="Password"
                                  PasswordChar="*"
-                                 Text="{Binding Password}"/>
-                        <Button Grid.Row="3" 
+                                 Text="{Binding Password}" />
+                        <Button Grid.Row="3"
                                 Width="180"
                                 Content="Login"
-                                Command="{Binding LoginCommand}"/>
+                                Command="{Binding LoginCommand}" />
                     </Grid>
                 </TabItem>
             </TabControl>
             <TextBlock Text="{Binding Error}"
                        HorizontalAlignment="Center"
                        IsVisible="{Binding Error, Converter={x:Static StringConverters.IsNotNullOrEmpty}}"
-                       Foreground="{StaticResource Offline}"/>
+                       Foreground="{StaticResource Offline}" />
         </StackPanel>
     </Grid>
 </UserControl>

@@ -26,6 +26,7 @@ public interface IMainViewModel
     int DeviceToConnectIndex { get; set; }
 
     ICommand ConnectDeviceCommand { get; }
+    ICommand ConfirmConnectionCommand { get; }
     ICommand AddNewCommand { get; }
     ICommand ExecuteCommand { get; }
     ICommand DisconnectCommand { get; }

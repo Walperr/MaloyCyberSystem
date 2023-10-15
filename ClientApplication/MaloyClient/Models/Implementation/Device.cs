@@ -7,19 +7,25 @@ namespace MaloyClient.Models.Implementation;
 internal sealed class Device : ViewModelBase, IDevice
 {
     private string _name;
+    private readonly IClientService _clientService;
     private DateTime _timeMax = DateTime.Now;
     private DateTime _timeMin = DateTime.Today;
 
-    public Device(string serialNumber, string name)
+    public Device(string serialNumber, string name, IClientService clientService)
     {
         SerialNumber = serialNumber;
         _name = name;
+        _clientService = clientService;
     }
 
     public string Name
     {
         get => _name;
-        set => this.RaiseAndSetIfChanged(ref _name, value);
+        set
+        {
+            this.RaiseAndSetIfChanged(ref _name, value);
+            _clientService.RenameDevice(SerialNumber, value);
+        }
     }
 
     public string SerialNumber { get; }

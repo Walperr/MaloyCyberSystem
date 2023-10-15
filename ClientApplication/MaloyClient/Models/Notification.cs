@@ -1,3 +1,3 @@
 ﻿namespace MaloyClient.Models;
 
-public record Notification(string SenderID, string Message);
+public sealed record Notification(string SenderID, string Message);

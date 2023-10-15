@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Globalization;
 using System.Threading;
 using Avalonia;
 using Avalonia.Controls;
@@ -9,7 +8,7 @@ using Avalonia.Interactivity;
 
 namespace MaloyClient.Views;
 
-public partial class DateTimePicker : UserControl
+public sealed partial class DateTimePicker : UserControl
 {
     public static readonly StyledProperty<DateTime> CurrentDateTimeProperty =
         AvaloniaProperty.Register<DateTimePicker, DateTime>(

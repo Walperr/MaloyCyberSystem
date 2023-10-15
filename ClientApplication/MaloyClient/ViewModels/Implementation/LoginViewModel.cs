@@ -1,18 +1,35 @@
-﻿using System.Windows.Input;
+﻿using System;
+using System.Windows.Input;
+using MaloyClient.Models;
 using ReactiveUI;
 
 namespace MaloyClient.ViewModels.Implementation;
 
 internal sealed class LoginViewModel : ViewModelBase, ILoginViewModel
 {
+    private readonly IClientService _clientService;
     private ICommand? _disconnectCommand;
     private string? _error;
     private bool _isConnected;
     private ICommand? _loginCommand;
     private string _password = string.Empty;
+    private int _port = 1883;
     private ICommand? _registerCommand;
     private string _repeatPassword = string.Empty;
+    private string _serverIp = "localhost";
     private string _username = string.Empty;
+
+    public LoginViewModel(IClientService clientService)
+    {
+        _clientService = clientService;
+        _clientService.Disconnected += ClientServiceOnDisconnected;
+    }
+
+    private void ClientServiceOnDisconnected(object? sender, EventArgs e)
+    {
+        IsConnected = false;
+        Error = _clientService.Error;
+    }
 
     public string Username
     {
@@ -32,6 +49,26 @@ internal sealed class LoginViewModel : ViewModelBase, ILoginViewModel
         set => this.RaiseAndSetIfChanged(ref _repeatPassword, value);
     }
 
+    public string ServerIP
+    {
+        get => _serverIp;
+        set
+        {
+            this.RaiseAndSetIfChanged(ref _serverIp, value);
+            _clientService.ServerIP = value;
+        }
+    }
+
+    public int Port
+    {
+        get => _port;
+        set
+        {
+            this.RaiseAndSetIfChanged(ref _port, value);
+            _clientService.ServerPort = value;
+        }
+    }
+
     public string? Error
     {
         get => _error;
@@ -46,33 +83,47 @@ internal sealed class LoginViewModel : ViewModelBase, ILoginViewModel
 
     public ICommand LoginCommand => _loginCommand ??= ReactiveCommand.Create(() =>
     {
-        if (string.IsNullOrEmpty(Username) || string.IsNullOrEmpty(Password))
+        Error = null;
+        if (string.IsNullOrEmpty(ServerIP))
+        {
+            Error = "Address cannot be empty";
+        }
+        else if (string.IsNullOrEmpty(Username) || string.IsNullOrEmpty(Password))
         {
             Error = "Username and password cannot be empty";
         }
         else
         {
-            Error = null;
-            IsConnected = true;
+            var isConnected = _clientService.TryConnect(Username, Password);
+
+            Error = _clientService.Error;
+            IsConnected = isConnected;
         }
     });
 
     public ICommand RegisterCommand => _registerCommand ??= ReactiveCommand.Create(() =>
     {
-        if (string.IsNullOrEmpty(Username) || string.IsNullOrEmpty(Password))
+        Error = null;
+        if (string.IsNullOrEmpty(ServerIP))
+        {
+            Error = "Address cannot be empty";
+        }
+        else if (string.IsNullOrEmpty(Username) || string.IsNullOrEmpty(Password))
         {
             Error = "Username and password cannot be empty";
         }
         else if (Password != RepeatPassword)
         {
-            Error = "Password are not equal";
+            Error = "Passwords are not equal";
         }
         else
         {
-            Error = null;
-            IsConnected = true;
+            var isConnected = _clientService.TryConnect(Username, Password, true);
+
+            Error = _clientService.Error;
+            IsConnected = isConnected;
         }
     });
 
-    public ICommand DisconnectCommand => _disconnectCommand ??= ReactiveCommand.Create(() => IsConnected = false);
+    public ICommand DisconnectCommand => _disconnectCommand ??= ReactiveCommand.Create(() => _clientService.Disconnect());
 }

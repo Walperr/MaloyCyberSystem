@@ -7,6 +7,7 @@ using Avalonia.Media;
 using Avalonia.Plot.Misc;
 using Avalonia.Plot.ViewModel;
 using MaloyClient.Models;
+using Microsoft.Extensions.DependencyInjection;
 using ReactiveUI;
 
 namespace MaloyClient.ViewModels.Implementation;
@@ -14,9 +15,13 @@ namespace MaloyClient.ViewModels.Implementation;
 internal sealed class DeviceTabViewModel : ViewModelBase, IDeviceTabViewModel
 {
     private ICommand? _refreshData;
+    private readonly IClientService _clientService;
+    private readonly IPlotSeries _series;
 
-    public DeviceTabViewModel(IDevice device)
+    public DeviceTabViewModel(IDevice device, IServiceProvider services)
     {
+        _clientService = services.GetRequiredService<IClientService>();
+        
         Device = device;
 
         Plot = PlotFactory.CreatePlot();
@@ -27,50 +32,33 @@ internal sealed class DeviceTabViewModel : ViewModelBase, IDeviceTabViewModel
         Plot.Background = mainColor;
         Plot.GridLinesColor = linesColor;
 
-        var xMin = -Math.PI;
-        var xStep = Math.PI * 2 / 1000000;
+        _series = PlotFactory.CreateSeries();
+        
+        _series.Color = Colors.Orange;
+        _series.Thickness = 2;
 
-        var x = Enumerable.Range(0, 1000000).Select(i => xMin + xStep * i).ToArray();
-        var y = x.Select(Math.Sin).ToArray();
-
-        var series = PlotFactory.CreateSeries();
-
-        series.XValues = x;
-        series.YValues = y;
-
-        series.Color = Colors.Red;
-        series.LineStyle = LineStyle.Solid;
-
-        Plot.AddSeries(series);
-
-        y = x.Select(d => Math.Sin(d * 3) * 2).ToArray();
-
-        series = PlotFactory.CreateSeries();
-
-        series.XValues = x;
-        series.YValues = y;
-
-        series.Color = Colors.Orange;
-        series.Thickness = 2;
-
-        Plot.AddSeries(series);
-
-        y = x.Select(d => Math.Cos(d * 3) * 1.5).ToArray();
-
-        series = PlotFactory.CreateSeries();
-
-        series.XValues = x;
-        series.YValues = y;
-
-        series.Color = Colors.CadetBlue;
-        series.Thickness = 2;
-
-        Plot.AddSeries(series);
+        Plot.AddSeries(_series);
 
         Plot.AutoScale = false;
     }
 
     public IDevice Device { get; }
     public IPlotViewModel Plot { get; }
-    public ICommand RefreshDataCommand => _refreshData ??= ReactiveCommand.Create(() => { });
+    public ICommand RefreshDataCommand => _refreshData ??= ReactiveCommand.Create(() =>
+    {
+        var values = _clientService.GetDeviceData(Device.SerialNumber, Device.TimeMin, Device.TimeMax);
+
+        _series.XValues = values.Times.Select(t =>
+        {
+            var year = t.Year - 2000;
+            var day = t.DayOfYear;
+            var hour = t.Hour;
+            var minute = t.Minute;
+            var sec = t.Second;
+
+            return (double) sec + minute * 60 + hour * 60 * 60 + day * 24 * 60 * 60 + year * 365 * 24 * 60 * 60;
+        }).ToArray();
+
+        _series.YValues = values.Values;
+    });
 }

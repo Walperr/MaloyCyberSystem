@@ -1,10 +1,8 @@
-﻿using Avalonia;
-using Avalonia.Controls;
-using Avalonia.Markup.Xaml;
+﻿using Avalonia.Controls;
 
 namespace MaloyClient.Views;
 
-public partial class LoginView : UserControl
+public sealed partial class LoginView : UserControl
 {
     public LoginView()
     {

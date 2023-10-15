@@ -1,9 +1,9 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Collections.Specialized;
 using System.Linq;
 using System.Windows.Input;
-using DynamicData;
 using MaloyClient.Models;
 using MaloyClient.Models.Implementation;
 using ReactiveUI;
@@ -13,60 +13,37 @@ namespace MaloyClient.ViewModels.Implementation;
 internal sealed class MainViewModel : ViewModelBase, IMainViewModel
 {
     private readonly ObservableCollection<IDevice> _allDevices = new();
+    private readonly IClientService _clientService;
     private readonly ObservableCollection<Command> _commands = new();
     private readonly ObservableCollection<IDevice> _connectedDevices = new();
     private readonly ObservableCollection<IDeviceTabViewModel> _deviceTabs = new();
     private readonly ILoginViewModel _loginViewModel;
     private readonly ObservableCollection<Notification> _notifications = new();
+    private readonly IServiceProvider _services;
     private ICommand? _addNewCommand;
+    private ICommand? _confirmConnectionCommand;
     private ICommand? _connectDeviceCommand;
     private int _deviceToConnectIndex;
     private ICommand? _executeCommand;
+    private Notification? _lastNotification;
+    private ICommand? _openDeviceTabCommand;
     private IDevice? _selectedDevice;
     private IDeviceTabViewModel? _selectedTab;
-    private ICommand? _openDeviceTabCommand;
-    private Notification? _lastNotification;
     private bool _showCommands;
 
-    public MainViewModel(ILoginViewModel loginViewModel)
+    public MainViewModel(ILoginViewModel loginViewModel, IClientService clientService, IServiceProvider services)
     {
         _loginViewModel = loginViewModel;
+        _clientService = clientService;
+        _services = services;
 
-        //todo: remove this
+        _clientService.Connected += ClientOnConnected;
+        _clientService.MessageReceived += OnMessageReceived;
+        _clientService.DevicesChanged += ClientOnDevicesChanged;
+        _clientService.ConnectedDevicesChanged += ClientOnConnectedDevicesChanged;
+        _clientService.Disconnected += ClientOnDisconnected;
 
-        var devices = new IDevice[]
-        {
-            new Device("SN001", "Device 1"),
-            new Device("SN002", "Device 2"),
-            new Device("SN003", "Device 3"),
-            new Device("SN004", "Device 4"),
-            new Device("SN005", "Device 5"),
-            new Device("SN006", "Device 6"),
-            new Device("SN007", "Device 7"),
-            new Device("SN008", "Device 8"),
-            new Device("SN009", "Device 9"),
-            new Device("SN010", "Device 10")
-        };
-
-        _allDevices.AddRange(devices);
-
-        _commands.Add(new Command("Turn on rele", "invoke rele", false));
-        _commands.Add(new Command("Restart", "restart", false));
-        _commands.Add(new Command("Print value", "print value", false));
-        
         _notifications.CollectionChanged += NotificationsOnCollectionChanged;
-
-        _notifications.Add(new Notification("SN001", "Started"));
-        _notifications.Add(new Notification("SN002", "Started"));
-        _notifications.Add(new Notification("SN004", "Started"));
-        _notifications.Add(new Notification("SN005", "Started"));
-        _notifications.Add(new Notification("SN005", "Message 1"));
-        _notifications.Add(new Notification("SN002", "Hello, world!"));
-    }
-
-    private void NotificationsOnCollectionChanged(object? sender, NotifyCollectionChangedEventArgs e)
-    {
-        LastNotification = _notifications.LastOrDefault();
     }
 
     public Notification? LastNotification
@@ -100,7 +77,8 @@ internal sealed class MainViewModel : ViewModelBase, IMainViewModel
         set => this.RaiseAndSetIfChanged(ref _selectedDevice, value);
     }
 
-    public int DeviceToConnectIndex    {
+    public int DeviceToConnectIndex
+    {
         get => _deviceToConnectIndex;
         set => this.RaiseAndSetIfChanged(ref _deviceToConnectIndex, value);
     }
@@ -117,9 +95,18 @@ internal sealed class MainViewModel : ViewModelBase, IMainViewModel
             return;
 
         var device = _allDevices[DeviceToConnectIndex];
-        
-        if (!_connectedDevices.Contains(device)) 
-            _connectedDevices.Add(device);
+
+        _clientService.ConnectDevice(device.SerialNumber);
+    });
+
+    public ICommand ConfirmConnectionCommand => _confirmConnectionCommand ??= ReactiveCommand.Create<int>(code =>
+    {
+        if (DeviceToConnectIndex == -1)
+            return;
+
+        var device = _allDevices[DeviceToConnectIndex];
+
+        _clientService.ConfirmConnection(device.SerialNumber, code);
     });
 
     public ICommand AddNewCommand => _addNewCommand ??= ReactiveCommand.Create(() =>
@@ -132,7 +119,7 @@ internal sealed class MainViewModel : ViewModelBase, IMainViewModel
         if (SelectedDevice is null)
             return;
 
-        _notifications.Add(new Notification(SelectedDevice.SerialNumber, $"Invoked command:\n\r {command.CommandName}"));
+        _clientService.SendCommand(SelectedDevice.SerialNumber, command);
     });
 
     public ICommand DisconnectCommand => _loginViewModel.DisconnectCommand;
@@ -143,10 +130,117 @@ internal sealed class MainViewModel : ViewModelBase, IMainViewModel
 
         if (tab is null)
         {
-            tab = new DeviceTabViewModel(device);
+            tab = new DeviceTabViewModel(device, _services);
             _deviceTabs.Add(tab);
         }
-        
+
         SelectedTab = tab;
     });
+
+    private void ClientOnDisconnected(object? sender, EventArgs e)
+    {
+        _deviceTabs.Clear();
+        _allDevices.Clear();
+        _connectedDevices.Clear();
+    }
+
+    private void ClientOnConnectedDevicesChanged(object? sender, EventArgs e)
+    {
+        var newDevices = _clientService.GetConnectedDevices().ToArray();
+        var existingDevices = _connectedDevices;
+
+        var leftJoin = from device in newDevices
+            join existingDevice in existingDevices
+                on device.DeviceID equals existingDevice.SerialNumber
+                into tmp
+            select (device, deviceViewModel: tmp.DefaultIfEmpty().FirstOrDefault());
+
+        var rightJoin = from existingDevice in existingDevices
+            join newDevice in newDevices
+                on existingDevice.SerialNumber equals newDevice.DeviceID
+                into tmp
+            select (device: tmp.DefaultIfEmpty().FirstOrDefault(), deviceViewModel: existingDevice);
+
+        var fullJoin = leftJoin.Union(rightJoin).ToArray();
+
+        foreach (var (device, deviceViewModel) in fullJoin)
+            switch (device, deviceViewModel)
+            {
+                case (null, null):
+                    break;
+                case (null, not null):
+                    _connectedDevices.Remove(deviceViewModel);
+                    continue;
+                case (not null, null):
+                    _connectedDevices.Add(_allDevices.FirstOrDefault(d => d.SerialNumber == device.DeviceID)!);
+                    continue;
+                case (not null, not null):
+                    deviceViewModel.Name = device.Name;
+                    break;
+            }
+    }
+
+    private void ClientOnDevicesChanged(object? sender, EventArgs e)
+    {
+        var newDevices = _clientService.GetAllDevices().ToArray();
+        var existingDevices = _allDevices;
+
+        var leftJoin = from device in newDevices
+            join existingDevice in existingDevices
+                on device.DeviceID equals existingDevice.SerialNumber
+                into tmp
+            select (device, deviceViewModel: tmp.DefaultIfEmpty().FirstOrDefault());
+
+        var rightJoin = from existingDevice in existingDevices
+            join newDevice in newDevices
+                on existingDevice.SerialNumber equals newDevice.DeviceID
+                into tmp
+            select (device: tmp.DefaultIfEmpty().FirstOrDefault(), deviceViewModel: existingDevice);
+
+        var fullJoin = leftJoin.Union(rightJoin).ToArray();
+
+        foreach (var (device, deviceViewModel) in fullJoin)
+            switch (device, deviceViewModel)
+            {
+                case (null, null):
+                    break;
+                case (null, not null):
+                    _connectedDevices.Remove(deviceViewModel);
+                    _allDevices.Remove(deviceViewModel);
+                    continue;
+                case (not null, null):
+                    _allDevices.Add(new Device(device.DeviceID, device.Name, _clientService));
+                    continue;
+                case (not null, not null):
+                    deviceViewModel.Name = device.Name;
+                    break;
+            }
+    }
+
+    private void OnMessageReceived(object? sender, Notification e)
+    {
+        _notifications.Add(e);
+    }
+
+    private void ClientOnConnected(object? sender, EventArgs e)
+    {
+        _allDevices.Clear();
+        _connectedDevices.Clear();
+
+        var devices = _clientService.GetAllDevices();
+        var connectedDevices = _clientService.GetConnectedDevices().ToArray();
+
+        foreach (var device in devices)
+        {
+            var deviceViewModel = new Device(device.DeviceID, device.Name, _clientService);
+            _allDevices.Add(deviceViewModel);
+            if (connectedDevices.Any(d => d.DeviceID == device.DeviceID))
+                _connectedDevices.Add(deviceViewModel);
+        }
+    }
+
+    private void NotificationsOnCollectionChanged(object? sender, NotifyCollectionChangedEventArgs e)
+    {
+        LastNotification = _notifications.LastOrDefault();
+    }
 }

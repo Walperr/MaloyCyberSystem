@@ -1,9 +1,11 @@
-﻿using MaloyClient.ViewModels.Implementation;
+﻿using MaloyClient.Models;
+using MaloyClient.Models.Implementation;
+using MaloyClient.ViewModels.Implementation;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace MaloyClient.ViewModels;
 
-public class MainWindowViewModel : ViewModelBase
+public sealed class MainWindowViewModel : ViewModelBase
 {
     public IMainViewModel MainViewModel { get; }
     public ILoginViewModel LoginViewModel { get; }
@@ -14,6 +16,7 @@ public class MainWindowViewModel : ViewModelBase
 
         container.AddSingleton<IMainViewModel, MainViewModel>();
         container.AddSingleton<ILoginViewModel, LoginViewModel>();
+        container.AddSingleton<IClientService, ClientService>();
 
         var services = container.BuildServiceProvider();
         

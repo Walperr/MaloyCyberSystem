@@ -118,6 +118,9 @@ public partial class PlotArea : UserControl
 
         foreach (var series in plotSeries)
         {
+            if (series.XValues.Length != series.YValues.Length)
+                continue;
+            
             var points = EnumeratePoints(series, xMin, xMax, yMin, yMax, bounds);
 
             paint.Color = series.Color.ToSKColor();
