@@ -5,6 +5,7 @@ using MQTTServer.DataContexts;
 using MQTTServer.Dto;
 using MQTTServer.Misc;
 using MQTTServer.Models;
+using Device = MQTTServer.Models.Device;
 using Server = MQTTnet.Server.MqttServer;
 
 namespace MQTTServer.Services.Implementation;
@@ -86,6 +87,8 @@ internal sealed class BrokerService : IBrokerService
 
             await _dataContext.Devices.AddAsync(device);
             await _dataContext.SaveChangesAsync();
+
+            await _server.InjectApplicationMessage(Topics.SERVER_NOTIFICATIONS_TOPIC, "Devices updated");
 
             return;
         }
@@ -317,6 +320,9 @@ internal sealed class BrokerService : IBrokerService
 
         await _dataContext.SaveChangesAsync();
         await _server.SubscribeAsync(e.ClientId, $"{Topics.NOTIFICATIONS_TOPIC}{deviceID}");
+
+        await _server.InjectApplicationMessage(Topics.SERVER_NOTIFICATIONS_TOPIC,
+            $"Connected device and user {e.ClientId}");
     }
 
     private async Task StoreConnectionKey(string deviceID, int code)
@@ -332,7 +338,7 @@ internal sealed class BrokerService : IBrokerService
     }
 
     [MessageReceiver]
-    public async Task OnMessageReceived(string senderID, string topic, DeviceValues data)
+    public async Task OnMessageReceived(string senderID, string topic, DeviceValue data)
     {
         if (topic is not Topics.DATA_TOPIC)
             return;

@@ -10,6 +10,8 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 
+builder.Services.AddSwaggerGen();
+
 builder.WebHost.UseKestrel(o =>
 {
     o.ListenAnyIP(1883, l => l.UseMqtt());
@@ -27,9 +29,18 @@ builder.Services.AddScoped<IBrokerService, BrokerService>();
 
 var app = builder.Build();
 
+// Configure the HTTP request pipeline.
+if (app.Environment.IsDevelopment())
+{
+    app.UseSwagger();
+    app.UseSwaggerUI();
+}
+
 app.UseRouting();
 
 app.UseHttpsRedirection();
+
+app.UseStaticFiles();
 
 app.MapConnectionHandler<MqttConnectionHandler>("/mqtt");
 
