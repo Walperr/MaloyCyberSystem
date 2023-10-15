@@ -32,7 +32,7 @@
                     <Grid RowDefinitions="Auto, *">
                         <Grid Grid.Row="0"
                               RowDefinitions="*,*"
-                              ColumnDefinitions="Auto,*,Auto">
+                              ColumnDefinitions="Auto,Auto,*,Auto">
                             <TextBlock Text="Name:" Margin="5" VerticalAlignment="Center" />
                             <TextBox Grid.Row="0" Grid.Column="1"
                                      Width="NaN"
@@ -42,10 +42,15 @@
                                      Watermark="Enter name"
                                      Text="{Binding Device.Name}"
                                      Background="Transparent" />
+                            <CheckBox Grid.Row="0" Grid.Column="2" Content="Autoscale plot"
+                                      IsChecked="{Binding Plot.AutoScale}"
+                                      Foreground="{StaticResource TextMain}"
+                                      HorizontalAlignment="Left"/>
                             <TextBlock Grid.Column="0" Grid.Row="1" Text="Data limits:" Margin="5"
                                        VerticalAlignment="Center" />
                             <Grid Grid.Row="1"
                                   Grid.Column="1"
+                                  Grid.ColumnSpan="2"
                                   Background="Transparent"
                                   ColumnDefinitions="*,*">
                                 <views:DateTimePicker Grid.Column="0" Margin="5,0"
@@ -53,13 +58,13 @@
                                 <views:DateTimePicker Grid.Column="1" Margin="5,0"
                                                       CurrentDateTime="{Binding Device.TimeMax}"/>
                             </Grid>
-                            <TextBlock Grid.Row="0" Grid.Column="2" Text="Serial number: " Margin="5"
+                            <TextBlock Grid.Row="0" Grid.Column="3" Text="Serial number: " Margin="5"
                                        VerticalAlignment="Center" x:Name="SerialText"
                                        HorizontalAlignment="Right">
                                 <TextBlock Text="{Binding Device.SerialNumber}" />
                             </TextBlock>
                             <Button Grid.Row="1"
-                                    Grid.Column="2"
+                                    Grid.Column="3"
                                     Height="30"
                                     Width="{Binding Bounds.Width, ElementName=SerialText}"
                                     Content="Refresh data"
@@ -138,5 +143,24 @@
                       Theme="{StaticResource ExpandLRTogglelButtonTheme}"
                       VerticalAlignment="Top"
                       HorizontalAlignment="Right"/>
+        <Grid Grid.Column="0" Grid.ColumnSpan="4"
+              Background="{StaticResource BackgroundMain}"
+              IsVisible="{Binding ShowConfirmation}">
+            <TextBlock Theme="{StaticResource TitleText}"
+                       Text="Enter connection code"/>
+            <StackPanel Orientation="Vertical"
+                        HorizontalAlignment="Center"
+                        VerticalAlignment="Center">
+                <TextBox Watermark="4 digit code"
+                         x:Name="CodeTextBox"/>
+            
+                <Button Theme="{StaticResource CommandButtonTheme}"
+                        HorizontalAlignment="Center"
+                        Width="180"
+                        Content="Submit"
+                        Command="{Binding ConfirmConnectionCommand}"
+                        CommandParameter="{Binding Text, ElementName=CodeTextBox}"/>
+            </StackPanel>
+        </Grid>
     </Grid>
 </UserControl>

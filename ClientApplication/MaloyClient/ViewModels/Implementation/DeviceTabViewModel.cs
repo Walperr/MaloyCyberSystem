@@ -31,6 +31,7 @@ internal sealed class DeviceTabViewModel : ViewModelBase, IDeviceTabViewModel
 
         Plot.Background = mainColor;
         Plot.GridLinesColor = linesColor;
+        Plot.AutoScale = true;
 
         _series = PlotFactory.CreateSeries();
         
@@ -38,26 +39,25 @@ internal sealed class DeviceTabViewModel : ViewModelBase, IDeviceTabViewModel
         _series.Thickness = 2;
 
         Plot.AddSeries(_series);
-
-        Plot.AutoScale = false;
     }
 
     public IDevice Device { get; }
     public IPlotViewModel Plot { get; }
-    public ICommand RefreshDataCommand => _refreshData ??= ReactiveCommand.Create(() =>
+    public ICommand RefreshDataCommand => _refreshData ??= ReactiveCommand.CreateFromTask(async () =>
     {
-        var values = _clientService.GetDeviceData(Device.SerialNumber, Device.TimeMin, Device.TimeMax);
+        var values = await _clientService.GetDeviceData(Device.SerialNumber, Device.TimeMin, Device.TimeMax);
 
-        _series.XValues = values.Times.Select(t =>
+        _series.XValues = values.Times.Select((t, i) =>
         {
-            var year = t.Year - 2000;
-            var day = t.DayOfYear;
-            var hour = t.Hour;
-            var minute = t.Minute;
-            var sec = t.Second;
-
-            return (double) sec + minute * 60 + hour * 60 * 60 + day * 24 * 60 * 60 + year * 365 * 24 * 60 * 60;
-        }).ToArray();
+            // var year = t.Year;
+            // var day = t.DayOfYear;
+            // var hour = t.Hour;
+            // var minute = t.Minute;
+            // var sec = t.Second;
+            //
+            // return (double) sec + minute * 60 + hour * 60 * 60 + day * 24 * 60 * 60 + year * 365 * 24 * 60 * 60;
+            return (double)i;
+        }).OrderBy(x => x).ToArray();
 
         _series.YValues = values.Values;
     });

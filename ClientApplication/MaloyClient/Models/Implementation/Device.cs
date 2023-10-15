@@ -1,10 +1,9 @@
 using System;
-using MaloyClient.ViewModels;
 using ReactiveUI;
 
 namespace MaloyClient.Models.Implementation;
 
-internal sealed class Device : ViewModelBase, IDevice
+internal sealed class Device : ReactiveObject, IDevice
 {
     private string _name;
     private readonly IClientService _clientService;

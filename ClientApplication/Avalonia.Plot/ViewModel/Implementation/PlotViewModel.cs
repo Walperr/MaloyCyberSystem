@@ -214,6 +214,9 @@ internal sealed class PlotViewModel : ReactiveObject, IPlotViewModel
 
         foreach (var series in Series)
         {
+            if (!series.XValues.Any() || !series.YValues.Any())
+                continue;
+            
             minX = Math.Min(minX, series.XValues.Min());
             maxX = Math.Max(maxX, series.XValues.Max());
 

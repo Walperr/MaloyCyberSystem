@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using MaloyClient.Dto;
 
 namespace MaloyClient.Models;
@@ -11,7 +12,7 @@ public interface IClientService
 
     string? Error { get; }
 
-    bool TryConnect(string userID, string password, bool register = false);
+    Task<bool> TryConnect(string userID, string password, bool register = false);
     void Disconnect();
 
     event EventHandler<Notification> MessageReceived;
@@ -20,15 +21,15 @@ public interface IClientService
     event EventHandler ConnectedDevicesChanged;
     event EventHandler DevicesChanged;
 
-    IEnumerable<Device> GetAllDevices();
-    IEnumerable<Device> GetConnectedDevices();
+    Task<IEnumerable<Device>> GetAllDevices();
+    Task<IEnumerable<Device>> GetConnectedDevices();
 
     void ConnectDevice(string deviceID);
     void ConfirmConnection(string deviceID, int code);
 
     void SendCommand(string deviceID, Command command);
 
-    DeviceValues GetDeviceData(string deviceID, DateTime start, DateTime end);
+    Task<DeviceValues> GetDeviceData(string deviceID, DateTime start, DateTime end);
 
     void RenameDevice(string deviceID, string name);
 }

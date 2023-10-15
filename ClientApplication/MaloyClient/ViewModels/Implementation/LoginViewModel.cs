@@ -81,7 +81,7 @@ internal sealed class LoginViewModel : ViewModelBase, ILoginViewModel
         private set => this.RaiseAndSetIfChanged(ref _isConnected, value);
     }
 
-    public ICommand LoginCommand => _loginCommand ??= ReactiveCommand.Create(() =>
+    public ICommand LoginCommand => _loginCommand ??= ReactiveCommand.Create(async () =>
     {
         Error = null;
         if (string.IsNullOrEmpty(ServerIP))
@@ -94,14 +94,14 @@ internal sealed class LoginViewModel : ViewModelBase, ILoginViewModel
         }
         else
         {
-            var isConnected = _clientService.TryConnect(Username, Password);
+            var isConnected = await _clientService.TryConnect(Username, Password);
 
             Error = _clientService.Error;
             IsConnected = isConnected;
         }
     });
 
-    public ICommand RegisterCommand => _registerCommand ??= ReactiveCommand.Create(() =>
+    public ICommand RegisterCommand => _registerCommand ??= ReactiveCommand.Create(async () =>
     {
         Error = null;
         if (string.IsNullOrEmpty(ServerIP))
@@ -118,7 +118,7 @@ internal sealed class LoginViewModel : ViewModelBase, ILoginViewModel
         }
         else
         {
-            var isConnected = _clientService.TryConnect(Username, Password, true);
+            var isConnected = await _clientService.TryConnect(Username, Password, true);
 
             Error = _clientService.Error;
             IsConnected = isConnected;

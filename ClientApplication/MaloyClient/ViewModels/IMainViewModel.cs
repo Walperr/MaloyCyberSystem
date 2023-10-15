@@ -10,6 +10,7 @@ public interface IMainViewModel
     string Password { get; }
     
     bool ShowCommands { get; set; }
+    bool ShowConfirmation { get; set; }
     
     IEnumerable<IDevice> ConnectedDevices { get; }
     IEnumerable<IDevice> AllDevices { get; }

@@ -30,6 +30,7 @@ internal sealed class MainViewModel : ViewModelBase, IMainViewModel
     private IDevice? _selectedDevice;
     private IDeviceTabViewModel? _selectedTab;
     private bool _showCommands;
+    private bool _showConfirmation;
 
     public MainViewModel(ILoginViewModel loginViewModel, IClientService clientService, IServiceProvider services)
     {
@@ -59,6 +60,12 @@ internal sealed class MainViewModel : ViewModelBase, IMainViewModel
     {
         get => _showCommands;
         set => this.RaiseAndSetIfChanged(ref _showCommands, value);
+    }
+
+    public bool ShowConfirmation
+    {
+        get => _showConfirmation;
+        set => this.RaiseAndSetIfChanged(ref _showConfirmation, value);
     }
 
     public IEnumerable<IDevice> ConnectedDevices => _connectedDevices;
@@ -97,16 +104,20 @@ internal sealed class MainViewModel : ViewModelBase, IMainViewModel
         var device = _allDevices[DeviceToConnectIndex];
 
         _clientService.ConnectDevice(device.SerialNumber);
+
+        ShowConfirmation = true;
     });
 
-    public ICommand ConfirmConnectionCommand => _confirmConnectionCommand ??= ReactiveCommand.Create<int>(code =>
+    public ICommand ConfirmConnectionCommand => _confirmConnectionCommand ??= ReactiveCommand.Create<string>(code =>
     {
         if (DeviceToConnectIndex == -1)
             return;
 
         var device = _allDevices[DeviceToConnectIndex];
 
-        _clientService.ConfirmConnection(device.SerialNumber, code);
+        _clientService.ConfirmConnection(device.SerialNumber, int.Parse(code));
+
+        ShowConfirmation = false;
     });
 
     public ICommand AddNewCommand => _addNewCommand ??= ReactiveCommand.Create(() =>
@@ -144,9 +155,9 @@ internal sealed class MainViewModel : ViewModelBase, IMainViewModel
         _connectedDevices.Clear();
     }
 
-    private void ClientOnConnectedDevicesChanged(object? sender, EventArgs e)
+    private async void ClientOnConnectedDevicesChanged(object? sender, EventArgs e)
     {
-        var newDevices = _clientService.GetConnectedDevices().ToArray();
+        var newDevices = (await _clientService.GetConnectedDevices()).ToArray();
         var existingDevices = _connectedDevices;
 
         var leftJoin = from device in newDevices
@@ -180,9 +191,9 @@ internal sealed class MainViewModel : ViewModelBase, IMainViewModel
             }
     }
 
-    private void ClientOnDevicesChanged(object? sender, EventArgs e)
+    private async void ClientOnDevicesChanged(object? sender, EventArgs e)
     {
-        var newDevices = _clientService.GetAllDevices().ToArray();
+        var newDevices = (await _clientService.GetAllDevices()).ToArray();
         var existingDevices = _allDevices;
 
         var leftJoin = from device in newDevices
@@ -222,13 +233,13 @@ internal sealed class MainViewModel : ViewModelBase, IMainViewModel
         _notifications.Add(e);
     }
 
-    private void ClientOnConnected(object? sender, EventArgs e)
+    private async void ClientOnConnected(object? sender, EventArgs e)
     {
         _allDevices.Clear();
         _connectedDevices.Clear();
 
-        var devices = _clientService.GetAllDevices();
-        var connectedDevices = _clientService.GetConnectedDevices().ToArray();
+        var devices = await _clientService.GetAllDevices();
+        var connectedDevices = (await _clientService.GetConnectedDevices()).ToArray();
 
         foreach (var device in devices)
         {
