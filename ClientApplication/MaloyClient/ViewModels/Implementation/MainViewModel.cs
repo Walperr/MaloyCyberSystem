@@ -26,6 +26,7 @@ internal sealed class MainViewModel : ViewModelBase, IMainViewModel
     private IDeviceTabViewModel? _selectedTab;
     private ICommand? _openDeviceTabCommand;
     private Notification? _lastNotification;
+    private bool _showCommands;
 
     public MainViewModel(ILoginViewModel loginViewModel)
     {
@@ -76,6 +77,12 @@ internal sealed class MainViewModel : ViewModelBase, IMainViewModel
 
     public string Username => _loginViewModel.Username;
     public string Password => _loginViewModel.Password;
+
+    public bool ShowCommands
+    {
+        get => _showCommands;
+        set => this.RaiseAndSetIfChanged(ref _showCommands, value);
+    }
 
     public IEnumerable<IDevice> ConnectedDevices => _connectedDevices;
 

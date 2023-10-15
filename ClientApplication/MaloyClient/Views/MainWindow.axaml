@@ -18,9 +18,17 @@
         <vm:MainWindowViewModel/>
     </Design.DataContext>
 
-    <Grid Margin="0,15,0,15">
-    <views:MainView IsVisible="{Binding !IsVisible, ElementName=LoginView}"
+    <Grid>
+    <views:MainView Margin="0,30,0,15" 
+        IsVisible="{Binding !IsVisible, ElementName=LoginView}"
                     DataContext="{Binding MainViewModel}"/>
+    
+    <Button Margin="10,10,0,0"
+            HorizontalAlignment="Left"
+            VerticalAlignment="Top"
+            Content="Log out"
+            Theme="{StaticResource HyperlinkButtonTheme}"
+            Command="{Binding LoginViewModel.DisconnectCommand}"/>
     
     <views:LoginView x:Name="LoginView"
                      DataContext="{Binding LoginViewModel}"

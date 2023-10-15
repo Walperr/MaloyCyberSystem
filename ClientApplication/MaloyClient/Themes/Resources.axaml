@@ -1,6 +1,7 @@
 ﻿<Styles xmlns="https://github.com/avaloniaui"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        xmlns:system="clr-namespace:System;assembly=System.Runtime">
+        xmlns:system="clr-namespace:System;assembly=System.Runtime"
+        xmlns:generic="clr-namespace:System.Collections.Generic;assembly=System.Collections">
 
     <Styles.Resources>
         <ResourceDictionary>
@@ -460,6 +461,46 @@
                     <Setter Property="Foreground" Value="{StaticResource ButtonPressed}" />
                 </Style>
             </ControlTheme>
+            <ControlTheme x:Key="ExpandLRTogglelButtonTheme"
+                          TargetType="ToggleButton"
+                          BasedOn="{StaticResource {x:Type ToggleButton}}">
+                <Setter Property="Width" Value="25"/>
+                <Setter Property="Height" Value="25"/>
+                <Setter Property="Background" Value="Transparent"/>
+                <Setter Property="Foreground" Value="{StaticResource ButtonMain}"/>
+                <Setter Property="BorderBrush" Value="{StaticResource BackgroundAlter}"/>
+                <Setter Property="Template">
+                    <ControlTemplate>
+                        <Border Background="{TemplateBinding Background}"
+                                CornerRadius="{TemplateBinding CornerRadius}"
+                                BorderThickness="{TemplateBinding BorderThickness}">
+                            <Grid Background="Transparent">
+                                <Viewbox Width="{TemplateBinding Width}"
+                                         Height="{TemplateBinding Height}"
+                                         RenderTransform="scaleX(-1)"
+                                         Name="Icon">
+                                    <Path StrokeThickness="4"
+                                          Stroke="{TemplateBinding Foreground}"
+                                          Fill="{TemplateBinding BorderBrush}"
+                                          Margin="15">
+                                        <Path.Data>
+                                            <PathGeometry>
+                                                <PathFigure StartPoint="0,0">
+                                                    <LineSegment Point="50,25"/>
+                                                    <LineSegment Point="0,50"/>
+                                                </PathFigure>
+                                            </PathGeometry>
+                                        </Path.Data>
+                                    </Path>
+                                </Viewbox>
+                            </Grid>
+                        </Border>
+                    </ControlTemplate>
+                </Setter>
+                <Style Selector="^:checked /template/ Viewbox#Icon">
+                    <Setter Property="RenderTransform" Value="scaleX(1)"/>
+                </Style>
+            </ControlTheme>
         </ResourceDictionary>
     </Styles.Resources>
 
@@ -498,6 +539,7 @@
                         <Button Content="Press me" />
                         <Button Content="Press me too" Theme="{StaticResource CommandButtonTheme}" />
                         <Button Content="Hyperlink" Theme="{StaticResource HyperlinkButtonTheme}" />
+                        <ToggleButton Theme="{StaticResource ExpandLRTogglelButtonTheme}"/>
                         <TextBox Watermark="Type something" />
                     </StackPanel>
                 </TabItem>
