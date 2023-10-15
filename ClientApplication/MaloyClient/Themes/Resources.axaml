@@ -84,7 +84,6 @@
                     <Setter Property="Opacity" Value="{DynamicResource ThemeDisabledOpacity}" />
                 </Style>
             </ControlTheme>
-
             <ControlTheme x:Key="{x:Type ListBoxItem}"
                           TargetType="ListBoxItem">
                 <Setter Property="Background" Value="Transparent" />
@@ -129,7 +128,6 @@
                     <Setter Property="Background" Value="{DynamicResource BackgroundSelected}" />
                 </Style>
             </ControlTheme>
-
             <ControlTheme x:Key="{x:Type TextBlock}"
                           TargetType="TextBlock">
                 <Setter Property="TextWrapping" Value="NoWrap" />
@@ -140,7 +138,6 @@
                 <Setter Property="FontSize" Value="16" />
                 <Setter Property="HorizontalAlignment" Value="Left" />
             </ControlTheme>
-
             <ControlTheme x:Key="TitleText"
                           BasedOn="{StaticResource {x:Type TextBlock}}"
                           TargetType="TextBlock">
@@ -149,7 +146,6 @@
                 <Setter Property="FontWeight" Value="Bold" />
                 <Setter Property="FontSize" Value="18" />
             </ControlTheme>
-
             <ControlTheme x:Key="{x:Type Button}"
                           TargetType="Button">
                 <Setter Property="Background" Value="{DynamicResource BackgroundAlter}" />
@@ -189,8 +185,7 @@
                     <Setter Property="Opacity" Value="0.7" />
                 </Style>
             </ControlTheme>
-
-            <ControlTheme x:Key="CommandButton"
+            <ControlTheme x:Key="CommandButtonTheme"
                           TargetType="Button"
                           BasedOn="{StaticResource {x:Type Button}}">
                 <Setter Property="Background" Value="{StaticResource ButtonMain}" />
@@ -205,7 +200,6 @@
                     <Setter Property="Opacity" Value="0.7" />
                 </Style>
             </ControlTheme>
-
             <ControlTheme x:Key="CheckBoxLampTheme"
                           TargetType="CheckBox">
                 <Setter Property="IsEnabled" Value="False" />
@@ -231,7 +225,6 @@
                     </ControlTemplate>
                 </Setter>
             </ControlTheme>
-
             <ControlTheme x:Key="VerticalSplitter"
                           TargetType="GridSplitter"
                           BasedOn="{StaticResource {x:Type GridSplitter}}">
@@ -240,7 +233,6 @@
                 <Setter Property="ResizeBehavior" Value="BasedOnAlignment" />
                 <Setter Property="ResizeDirection" Value="Columns" />
             </ControlTheme>
-
             <ControlTheme x:Key="HorizontalSplitter"
                           TargetType="GridSplitter"
                           BasedOn="{StaticResource {x:Type GridSplitter}}">
@@ -249,27 +241,27 @@
                 <Setter Property="ResizeBehavior" Value="BasedOnAlignment" />
                 <Setter Property="ResizeDirection" Value="Rows" />
             </ControlTheme>
-            
             <ControlTheme TargetType="TextBox"
                           x:Key="{x:Type TextBox}">
-                <Setter Property="Width" Value="180"/>
-                <Setter Property="Height" Value="30"/>
-                <Setter Property="VerticalContentAlignment" Value="Center"/>
-                <Setter Property="UseFloatingWatermark" Value="True"/>
-                <Setter Property="HorizontalAlignment" Value="Center"/>
+                <Setter Property="Width" Value="180" />
+                <Setter Property="Height" Value="30" />
+                <Setter Property="VerticalContentAlignment" Value="Center" />
+                <Setter Property="UseFloatingWatermark" Value="True" />
+                <Setter Property="HorizontalAlignment" Value="Center" />
                 <Setter Property="FontFamily" Value="Verdana" />
-                <Setter Property="Background" Value="{StaticResource BackgroundHighlight}"/>
-                <Setter Property="CaretBrush" Value="{StaticResource TextMain}"/>
-                <Setter Property="Foreground" Value="{StaticResource TextMain}"/>
-                <Setter Property="SelectionBrush" Value="DimGray"/>
-                <Setter Property="Margin" Value="5"/>
+                <Setter Property="Background" Value="{StaticResource BackgroundHighlight}" />
+                <Setter Property="CaretBrush" Value="{StaticResource TextMain}" />
+                <Setter Property="Foreground" Value="{StaticResource TextMain}" />
+                <Setter Property="SelectionBrush" Value="DimGray" />
+                <Setter Property="Margin" Value="5" />
+                <Setter Property="CornerRadius" Value="10"/>
                 <Setter Property="Template">
                     <ControlTemplate TargetType="TextBox">
-                        <Border CornerRadius="10"
+                        <Border CornerRadius="{TemplateBinding CornerRadius}"
                                 Background="{TemplateBinding Background}">
                             <Grid Background="Transparent">
-                                <Rectangle StrokeThickness="1"/>
-                                
+                                <Rectangle StrokeThickness="1" />
+
                                 <TextPresenter Name="PART_TextPresenter"
                                                Margin="10,0,0,0"
                                                CaretBrush="{TemplateBinding CaretBrush}"
@@ -287,8 +279,8 @@
                                                TextAlignment="{TemplateBinding TextAlignment}"
                                                TextWrapping="{TemplateBinding TextWrapping}"
                                                VerticalAlignment="Center"
-                                               HorizontalAlignment="Left"/>
-                                
+                                               HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}" />
+
                                 <TextBlock IsHitTestVisible="False"
                                            Text="{TemplateBinding Watermark}"
                                            VerticalAlignment="Center"
@@ -312,37 +304,204 @@
                     </ControlTemplate>
                 </Setter>
             </ControlTheme>
+            <ControlTheme x:Key="{x:Type TabItem}"
+                          TargetType="TabItem">
+                <Setter Property="FontSize" Value="{DynamicResource FontSizeLarge}" />
+                <Setter Property="Foreground" Value="{DynamicResource ThemeForegroundLowBrush}" />
+                <Setter Property="HorizontalContentAlignment" Value="Left" />
+                <Setter Property="Padding" Value="5" />
+                <Setter Property="Template">
+                    <ControlTemplate>
+                        <Grid>
+                            <ContentPresenter Name="PART_ContentPresenter"
+                                              Padding="{TemplateBinding Padding}"
+                                              HorizontalContentAlignment="{TemplateBinding HorizontalContentAlignment}"
+                                              VerticalContentAlignment="{TemplateBinding VerticalContentAlignment}"
+                                              Content="{TemplateBinding Header}"
+                                              ContentTemplate="{TemplateBinding HeaderTemplate}"
+                                              CornerRadius="{TemplateBinding CornerRadius}" />
+                            <Border Name="PART_Border"
+                                    Background="Transparent"
+                                    BorderBrush="{StaticResource BackgroundAlter}" />
+                        </Grid>
+                    </ControlTemplate>
+                </Setter>
+                <Style Selector="^:disabled /template/ ContentPresenter#PART_ContentPresenter">
+                    <Setter Property="Opacity" Value="0.5" />
+                </Style>
+                <Style Selector="^:pointerover /template/ Border#PART_Border">
+                    <!-- <Setter Property="Background" Value="{DynamicResource ThemeControlHighlightMidBrush}" /> -->
+                    <Setter Property="BorderBrush" Value="{StaticResource BackgroundAlterHighlight}" />
+                </Style>
+                <Style Selector="^:selected /template/ Border#PART_Border">
+                    <!-- <Setter Property="Background" Value="{DynamicResource ThemeAccentBrush4}" /> -->
+                    <Setter Property="BorderBrush" Value="{StaticResource ButtonMain}" />
+                </Style>
+                <Style Selector="^:selected:focus /template/ Border#PART_Border">
+                    <!-- <Setter Property="Background" Value="{DynamicResource ThemeAccentBrush3}" /> -->
+                    <Setter Property="BorderBrush" Value="{StaticResource ButtonMain}" />
+                </Style>
+                <Style Selector="^:selected:pointerover /template/ Border#PART_Border">
+                    <!-- <Setter Property="Background" Value="{DynamicResource ThemeAccentBrush3}" /> -->
+                    <Setter Property="BorderBrush" Value="{StaticResource ButtonHighlight}" />
+                </Style>
+                <Style Selector="^:selected:focus:pointerover /template/ Border#PART_Border">
+                    <!-- <Setter Property="Background" Value="{DynamicResource ThemeAccentBrush2}" /> -->
+                    <Setter Property="BorderBrush" Value="{StaticResource ButtonHighlight}" />
+                </Style>
+                <Style Selector="^[TabStripPlacement=Right]">
+                    <Setter Property="HorizontalContentAlignment" Value="Right" />
+                </Style>
+                <Style Selector="^[TabStripPlacement=Top] /template/ Border#PART_Border">
+                    <Setter Property="BorderThickness" Value="0,0,0,3" />
+                    <Setter Property="Margin" Value="2,-2,2,0" />
+                </Style>
+                <Style Selector="^[TabStripPlacement=Bottom] /template/ Border#PART_Border">
+                    <Setter Property="BorderThickness" Value="0,3,0,0" />
+                    <Setter Property="Margin" Value="2,0,2,-2" />
+                </Style>
+                <Style Selector="^[TabStripPlacement=Left] /template/ Border#PART_Border">
+                    <Setter Property="BorderThickness" Value="0,0,3,0" />
+                    <Setter Property="Margin" Value="-2,2,0,2" />
+                </Style>
+                <Style Selector="^[TabStripPlacement=Right] /template/ Border#PART_Border">
+                    <Setter Property="BorderThickness" Value="3,0,0,0" />
+                    <Setter Property="Margin" Value="0,2,-2,2" />
+                </Style>
+            </ControlTheme>
+            <ControlTheme x:Key="{x:Type TabControl}"
+                          TargetType="TabControl">
+                <Setter Property="Padding" Value="8" />
+                <Setter Property="BorderBrush" Value="{StaticResource BackgroundSelected}"/>
+                <Setter Property="Template">
+                    <ControlTemplate>
+                        <DockPanel>
+                            <ItemsPresenter Name="PART_ItemsPresenter"
+                                            ItemsPanel="{TemplateBinding ItemsPanel}" />
+                            <Border Padding="{TemplateBinding Padding}"
+                                    Margin="1,2,1,1"
+                                    HorizontalAlignment="{TemplateBinding HorizontalAlignment}"
+                                    VerticalAlignment="{TemplateBinding VerticalAlignment}"
+                                    Background="{TemplateBinding Background}"
+                                    BorderBrush="{TemplateBinding BorderBrush}"
+                                    BorderThickness="{TemplateBinding BorderThickness}"
+                                    CornerRadius="{TemplateBinding CornerRadius}">
+                                <ContentPresenter Name="PART_SelectedContentHost"
+                                                  Margin="{TemplateBinding Padding}"
+                                                  HorizontalContentAlignment="{TemplateBinding HorizontalContentAlignment}"
+                                                  VerticalContentAlignment="{TemplateBinding VerticalContentAlignment}"
+                                                  Content="{TemplateBinding SelectedContent}"
+                                                  ContentTemplate="{TemplateBinding SelectedContentTemplate}"/>
+                            </Border>
+                        </DockPanel>
+                    </ControlTemplate>
+                </Setter>
+                <Style Selector="^[TabStripPlacement=Top]">
+                    <Setter Property="Padding" Value="0 4 0 0" />
+                </Style>
+                <Style Selector="^[TabStripPlacement=Top] /template/ ItemsPresenter#PART_ItemsPresenter">
+                    <Setter Property="DockPanel.Dock" Value="Top" />
+                </Style>
+                <Style Selector="^[TabStripPlacement=Bottom] /template/ ItemsPresenter#PART_ItemsPresenter">
+                    <Setter Property="DockPanel.Dock" Value="Bottom" />
+                </Style>
+                <Style Selector="^[TabStripPlacement=Bottom]">
+                    <Setter Property="Padding" Value="0 0 0 4" />
+                </Style>
+                <Style Selector="^[TabStripPlacement=Left] /template/ ItemsPresenter#PART_ItemsPresenter">
+                    <Setter Property="DockPanel.Dock" Value="Left" />
+                </Style>
+                <Style Selector="^[TabStripPlacement=Left] /template/ ItemsPresenter#PART_ItemsPresenter > WrapPanel">
+                    <Setter Property="Orientation" Value="Vertical" />
+                </Style>
+                <Style Selector="^[TabStripPlacement=Left]">
+                    <Setter Property="Padding" Value="4 0 0 0" />
+                </Style>
+                <Style Selector="^[TabStripPlacement=Right] /template/ ItemsPresenter#PART_ItemsPresenter">
+                    <Setter Property="DockPanel.Dock" Value="Right" />
+                </Style>
+                <Style Selector="^[TabStripPlacement=Right] /template/ ItemsPresenter#PART_ItemsPresenter > WrapPanel">
+                    <Setter Property="Orientation" Value="Vertical" />
+                </Style>
+                <Style Selector="^[TabStripPlacement=Right]">
+                    <Setter Property="Padding" Value="0 0 4 0" />
+                </Style>
+                <Style Selector="^ /template/ ItemsPresenter#PART_ItemsPresenter">
+                    <Setter Property="HorizontalAlignment" Value="Center"/>
+                </Style>
+            </ControlTheme>
+            <ControlTheme x:Key="LeftTabsTheme"
+                          TargetType="TabControl"
+                          BasedOn="{StaticResource {x:Type TabControl}}">
+                <Style Selector="^ /template/ ItemsPresenter#PART_ItemsPresenter">
+                    <Setter Property="HorizontalAlignment" Value="Left"/>
+                </Style>
+            </ControlTheme>
+            <ControlTheme x:Key="HyperlinkButtonTheme" TargetType="Button">
+                <Setter Property="FontWeight" Value="DemiBold" />
+                <Setter Property="Foreground" Value="{StaticResource ButtonMain}" />
+                <Setter Property="Background" Value="Transparent" />
+                <Setter Property="Cursor" Value="Hand" />
+                <Setter Property="FontSize" Value="12" />
+                <Setter Property="Template">
+                    <ControlTemplate TargetType="Button">
+                        <Grid Background="{TemplateBinding Background}">
+                            <TextBlock Text="{TemplateBinding Content}"
+                                       Name="PART_TextBlock"/>
+                        </Grid>
+                    </ControlTemplate>
+                </Setter>
+                <Style Selector="^:pointerover /template/ TextBlock#PART_TextBlock">
+                    <Setter Property="TextDecorations" Value="Underline" />
+                    <Setter Property="Foreground" Value="{StaticResource ButtonHighlight}" />
+                </Style>
+                <Style Selector="^:pressed /template/ TextBlock#PART_TextBlock">
+                    <Setter Property="TextDecorations" Value="Underline" />
+                    <Setter Property="Foreground" Value="{StaticResource ButtonPressed}" />
+                </Style>
+            </ControlTheme>
         </ResourceDictionary>
     </Styles.Resources>
 
     <Design.PreviewWith>
         <Border Width="200"
-                Height="500">
-            <StackPanel Orientation="Vertical"
-                        Background="{StaticResource BackgroundMain}">
-                <TextBlock Text="Title" Theme="{StaticResource TitleText}" />
-                <ListBox>
-                    <ListBox.ItemTemplate>
-                        <DataTemplate DataType="system:String">
-                            <StackPanel Orientation="Horizontal">
-                                <TextBlock Text="{Binding .}" />
-                                <CheckBox Theme="{StaticResource CheckBoxLampTheme}" IsChecked="True" Margin="50,0" />
-                            </StackPanel>
-                        </DataTemplate>
-                    </ListBox.ItemTemplate>
-                    <ListBox.Items>
-                        <system:String>Item 1</system:String>
-                        <system:String>Item 2</system:String>
-                        <system:String>Item 3</system:String>
-                        <system:String>Item 4</system:String>
-                    </ListBox.Items>
-                </ListBox>
-
-                <Button Content="Press me" />
-                <Button Content="Press me too" Theme="{StaticResource CommandButton}" />
-
-                <TextBox Watermark="Type something" />
-            </StackPanel>
+                Height="500"
+                Background="{StaticResource BackgroundMain}">
+            <TabControl TabStripPlacement="Top"
+                        BorderThickness="1"
+                        Theme="{StaticResource LeftTabsTheme}">
+                <TabItem Header="Listbox">
+                    <StackPanel Orientation="Vertical"
+                                Background="{StaticResource BackgroundMain}">
+                        <TextBlock Text="Title" Theme="{StaticResource TitleText}" />
+                        <ListBox>
+                            <ListBox.ItemTemplate>
+                                <DataTemplate DataType="system:String">
+                                    <StackPanel Orientation="Horizontal">
+                                        <TextBlock Text="{Binding .}" />
+                                        <CheckBox Theme="{StaticResource CheckBoxLampTheme}" IsChecked="True"
+                                                  Margin="50,0" />
+                                    </StackPanel>
+                                </DataTemplate>
+                            </ListBox.ItemTemplate>
+                            <ListBox.Items>
+                                <system:String>Item 1</system:String>
+                                <system:String>Item 2</system:String>
+                                <system:String>Item 3</system:String>
+                                <system:String>Item 4</system:String>
+                            </ListBox.Items>
+                        </ListBox>
+                    </StackPanel>
+                </TabItem>
+                <TabItem Header="Buttons">
+                    <StackPanel>
+                        <Button Content="Press me" />
+                        <Button Content="Press me too" Theme="{StaticResource CommandButtonTheme}" />
+                        <Button Content="Hyperlink" Theme="{StaticResource HyperlinkButtonTheme}" />
+                        <TextBox Watermark="Type something" />
+                    </StackPanel>
+                </TabItem>
+            </TabControl>
         </Border>
     </Design.PreviewWith>
 </Styles>

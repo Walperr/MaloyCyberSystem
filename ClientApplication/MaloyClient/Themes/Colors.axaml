@@ -15,10 +15,10 @@
         <Color x:Key="ButtonHighlightColor">#FFFFA50A</Color>
         <Color x:Key="ButtonPressedColor">#FFFF8C00</Color>
         
-        <!-- <Color x:Key="BackgroundMainColor">#FFFFFFFF</Color> -->
-        <!-- <Color x:Key="BackgroundHighlightColor">#FFF0F0F0</Color> -->
-        <!-- <Color x:Key="BackgroundSelectedColor">#FFE0E0E0</Color> -->
-        <!-- <Color x:Key="TextMainColor">Black</Color> -->
+        <!-- <Color x:Key="BackgroundMainColor">#FFF0F0F0</Color> -->
+        <!-- <Color x:Key="BackgroundHighlightColor">#FFE0E0E0</Color> -->
+        <!-- <Color x:Key="BackgroundSelectedColor">#FFC0C0C0</Color> -->
+        <!-- <Color x:Key="TextMainColor">#FF333333</Color> -->
         <!-- <Color x:Key="TextSecondaryColor">#FF80848E</Color> -->
 
         <SolidColorBrush x:Key="BackgroundMain" Color="{StaticResource BackgroundMainColor}"/>

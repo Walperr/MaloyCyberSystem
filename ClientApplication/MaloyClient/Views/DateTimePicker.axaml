@@ -1,0 +1,310 @@
+﻿<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:sys="clr-namespace:System;assembly=System.Runtime"
+             mc:Ignorable="d" d:DesignWidth="250" d:DesignHeight="400"
+             x:Class="MaloyClient.Views.DateTimePicker"
+             Background="Transparent"
+             x:Name="Root">
+    <UserControl.Resources>
+        <ResourceDictionary>
+            <ControlTheme x:Key="CalendarButton" TargetType="Button">
+                <Setter Property="TextElement.Foreground"
+                        Value="{StaticResource TextMain}" />
+                <Setter Property="Margin" Value="2,0,4,0" />
+                <Setter Property="Width" Value="20" />
+                <Setter Property="Template">
+                    <ControlTemplate>
+                        <Grid Height="24"
+                              Width="20"
+                              HorizontalAlignment="Center"
+                              VerticalAlignment="Center"
+                              Margin="0"
+                              ColumnDefinitions="*,*,*,*"
+                              RowDefinitions="23*,19*,19*,19*"
+                              ClipToBounds="False">
+                            <Border Name="Background"
+                                    Margin="0,-1,0,0"
+                                    Grid.ColumnSpan="4"
+                                    Grid.Row="1"
+                                    Grid.RowSpan="3"
+                                    BorderThickness="0.5,0,0.5,0.5"
+                                    BorderBrush="{TemplateBinding Foreground}"
+                                    CornerRadius="0,0,2,2" />
+                            <Border Grid.ColumnSpan="4"
+                                    Grid.RowSpan="1"
+                                    BorderBrush="{TemplateBinding Foreground}"
+                                    BorderThickness="0.5"
+                                    CornerRadius="2,2,0,0" />
+                            <TextBlock Margin="0,-1,0,0"
+                                       VerticalAlignment="Center"
+                                       HorizontalAlignment="Center"
+                                       Grid.Column="0"
+                                       Grid.Row="1"
+                                       Grid.ColumnSpan="4"
+                                       Grid.RowSpan="3"
+                                       Foreground="{TemplateBinding Foreground}"
+                                       FontSize="12"
+                                       Text="{Binding Source={x:Static sys:DateTime.Today}, Path=Day}" />
+                            <Ellipse HorizontalAlignment="Center"
+                                     VerticalAlignment="Center"
+                                     Fill="{TemplateBinding Foreground}"
+                                     StrokeThickness="0"
+                                     Grid.ColumnSpan="4"
+                                     Width="3"
+                                     Height="3" />
+                        </Grid>
+                    </ControlTemplate>
+                </Setter>
+            </ControlTheme>
+            <ControlTheme x:Key="DatePickerTheme"
+                          TargetType="CalendarDatePicker">
+                <Setter Property="Background" Value="{StaticResource BackgroundHighlight}" />
+                <Setter Property="Foreground" Value="{StaticResource TextMain}" />
+                <Setter Property="BorderBrush" Value="{StaticResource BackgroundSelected}" />
+                <Setter Property="BorderThickness" Value="0" />
+                <Setter Property="CornerRadius" Value="5" />
+                <Setter Property="MinHeight" Value="30" />
+                <Setter Property="HorizontalAlignment" Value="Left" />
+                <Setter Property="VerticalAlignment" Value="Center" />
+                <Setter Property="HorizontalContentAlignment" Value="Center" />
+                <Setter Property="VerticalContentAlignment" Value="Center" />
+                <Setter Property="Template">
+                    <ControlTemplate>
+                        <DataValidationErrors>
+                            <Panel x:Name="LayoutRoot"
+                                   HorizontalAlignment="Stretch"
+                                   VerticalAlignment="Stretch"
+                                   ClipToBounds="True">
+                                <Border x:Name="Background"
+                                        CornerRadius="{TemplateBinding CornerRadius}"
+                                        BorderThickness="{TemplateBinding BorderThickness}"
+                                        BorderBrush="{TemplateBinding BorderBrush}"
+                                        Background="{TemplateBinding Background}"
+                                        ClipToBounds="True"/>
+                                <Grid ColumnDefinitions="Auto,*">
+                                    <TextBox Name="PART_TextBox"
+                                             Foreground="{TemplateBinding Foreground}"
+                                             Background="Transparent"
+                                             BorderBrush="Transparent"
+                                             BorderThickness="0"
+                                             CornerRadius="{TemplateBinding CornerRadius}"
+                                             Margin="{TemplateBinding BorderThickness}"
+                                             Padding="{TemplateBinding Padding}"
+                                             Watermark="{TemplateBinding Watermark}"
+                                             UseFloatingWatermark="{TemplateBinding UseFloatingWatermark}"
+                                             HorizontalAlignment="Stretch"
+                                             VerticalAlignment="Stretch"
+                                             VerticalContentAlignment="{TemplateBinding VerticalContentAlignment}"
+                                             HorizontalContentAlignment="{TemplateBinding HorizontalContentAlignment}"
+                                             Grid.Column="1"
+                                             ClipToBounds="True">
+                                        <TextBox.Styles>
+                                            <Style
+                                                Selector="TextBox#PART_TextBox:focus /template/ Border#PART_BorderElement">
+                                                <!-- By default the TextBox has its own focused state, override this to disable it here -->
+                                                <Setter Property="Background" Value="Transparent" />
+                                                <Setter Property="BorderBrush" Value="Transparent" />
+                                                <Setter Property="BorderThickness" Value="0" />
+                                            </Style>
+                                            <Style Selector="TextBox#PART_TextBox:disabled">
+                                                <Style Selector="^ /template/ Border#PART_BorderElement">
+                                                    <!-- By default the TextBox has its own disabled state, override this to make the border background show through -->
+                                                    <Setter Property="Background" Value="Transparent" />
+                                                    <Setter Property="BorderBrush" Value="Transparent" />
+                                                </Style>
+                                                <Style
+                                                    Selector="^ /template/ TextBlock#PART_Watermark, ^ TextBlock#PART_FloatingWatermark">
+                                                    <Setter Property="TextElement.Foreground"
+                                                            Value="{StaticResource TextSecondary}" />
+                                                </Style>
+                                            </Style>
+                                        </TextBox.Styles>
+                                    </TextBox>
+                                    <Button Name="PART_Button"
+                                            Theme="{StaticResource CalendarButton}"
+                                            Grid.Column="0"
+                                            Focusable="False"
+                                            Margin="5,0,0,0"
+                                            HorizontalAlignment="Left" />
+                                    <Popup Grid.Column="1" Name="PART_Popup"
+                                           PlacementTarget="{TemplateBinding}"
+                                           IsLightDismissEnabled="True">
+                                        <Calendar Name="PART_Calendar"
+                                                  FirstDayOfWeek="{TemplateBinding FirstDayOfWeek}"
+                                                  IsTodayHighlighted="{TemplateBinding IsTodayHighlighted}"
+                                                  SelectedDate="{Binding RelativeSource={RelativeSource TemplatedParent}, Path=SelectedDate, Mode=TwoWay}"
+                                                  DisplayDate="{TemplateBinding DisplayDate}"
+                                                  Background="{StaticResource BackgroundMain}"
+                                                  BorderBrush="{StaticResource BackgroundHighlight}"
+                                                  DisplayDateStart="{TemplateBinding DisplayDateStart}"
+                                                  DisplayDateEnd="{TemplateBinding DisplayDateEnd}" />
+                                    </Popup>
+                                </Grid>
+                            </Panel>
+                        </DataValidationErrors>
+                    </ControlTemplate>
+                </Setter>
+
+                <!-- Pressed State -->
+                <Style Selector="^:pressed /template/ Border#Background">
+                    <Setter Property="Background" Value="{DynamicResource BackgroundSelected}" />
+                    <Setter Property="BorderBrush" Value="{DynamicResource BackgroundSelected}" />
+                </Style>
+
+                <!-- Pointer-over State -->
+                <Style Selector="^:pointerover /template/ Border#Background">
+                    <Setter Property="Background" Value="{DynamicResource BackgroundSelected}" />
+                    <Setter Property="BorderBrush" Value="{DynamicResource BackgroundSelected}" />
+                </Style>
+
+                <!-- Disabled State -->
+                <Style Selector="^:disabled">
+                    <Style Selector="^ /template/ Border#Background">
+                        <Setter Property="Opacity" Value="0.5" />
+                    </Style>
+
+                    <Style Selector="^ /template/ Button#PART_Button">
+                        <Setter Property="TextElement.Foreground"
+                                Value="{DynamicResource TextSecondary}" />
+                    </Style>
+                </Style>
+
+                <!-- Focused State -->
+                <Style Selector="^:focus-within:not(CalendarDatePicker:focus) /template/ Border#Background">
+                    <Setter Property="Background" Value="{DynamicResource BackgroundHighlight}" />
+                    <Setter Property="BorderBrush" Value="{DynamicResource BackgroundSelected}" />
+                    <Setter Property="BorderThickness" Value="2" />
+                </Style>
+
+                <!-- Error State -->
+                <Style Selector="^:error /template/ Border#Background">
+                    <Setter Property="BorderBrush" Value="{DynamicResource Offline}" />
+                </Style>
+            </ControlTheme>
+            <ControlTheme x:Key="{x:Type CalendarDayButton}" TargetType="CalendarDayButton"
+                          BasedOn="{StaticResource {x:Type CalendarDayButton}}">
+                <Style Selector="^:pointerover /template/ Border#Border">
+                    <Setter Property="BorderBrush" Value="{StaticResource BackgroundMain}" />
+                </Style>
+
+                <Style Selector="^:pressed /template/ Border#Border">
+                    <Setter Property="BorderBrush" Value="{StaticResource BackgroundSelected}" />
+                </Style>
+
+                <Style Selector="^:selected">
+                    <Style Selector="^ /template/ Border#Border">
+                        <Setter Property="BorderBrush" Value="{StaticResource BackgroundSelected}" />
+                    </Style>
+                    <Style Selector="^:pointerover /template/ Border#Border">
+                        <Setter Property="BorderBrush" Value="{StaticResource BackgroundHighlight}" />
+                    </Style>
+                    <Style Selector="^:pressed /template/ Border#Border">
+                        <Setter Property="BorderBrush" Value="{StaticResource BackgroundSelected}" />
+                    </Style>
+                </Style>
+
+                <Style Selector="^:inactive">
+                    <Style Selector="^ /template/ Border#Root">
+                        <Setter Property="Background" Value="{StaticResource BackgroundSelected}" />
+                    </Style>
+                    <Style Selector="^ /template/ ContentControl#Content">
+                        <Setter Property="Foreground" Value="{StaticResource TextSecondary}" />
+                    </Style>
+                </Style>
+
+                <Style Selector="^:blackout /template/ ContentControl#Content">
+                    <Setter Property="Foreground" Value="{StaticResource TextSecondary}" />
+                </Style>
+
+                <Style Selector="^:disabled /template/ ContentControl#Content">
+                    <Setter Property="Foreground" Value="{StaticResource TextSecondary}" />
+                </Style>
+            </ControlTheme>
+            <ControlTheme x:Key="{x:Type CalendarButton}"
+                          TargetType="CalendarButton"
+                          BasedOn="{StaticResource {x:Type CalendarButton}}">
+                <Style Selector="^:pointerover /template/ Border#Border">
+                    <Setter Property="BorderBrush" Value="{StaticResource BackgroundMain}" />
+                </Style>
+
+                <Style Selector="^:pressed /template/ Border#Border">
+                    <Setter Property="BorderBrush" Value="{StaticResource BackgroundSelected}" />
+                </Style>
+
+                <Style Selector="^:inactive">
+                    <Style Selector="^ /template/ Border#Root">
+                        <Setter Property="Background" Value="{StaticResource BackgroundSelected}" />
+                    </Style>
+                    <Style Selector="^ /template/ ContentControl#Content">
+                        <Setter Property="Foreground" Value="{StaticResource TextSecondary}" />
+                    </Style>
+                </Style>
+
+                <Style Selector="^:blackout /template/ ContentControl#Content">
+                    <Setter Property="Foreground" Value="{StaticResource TextSecondary}" />
+                </Style>
+
+                <Style Selector="^:disabled /template/ ContentControl#Content">
+                    <Setter Property="Foreground" Value="{StaticResource TextSecondary}" />
+                </Style>
+
+                <Style Selector="^:selected">
+                    <Style Selector="^ /template/ Border#Root">
+                        <Setter Property="Background" Value="{StaticResource BackgroundMain}" />
+                    </Style>
+
+                    <Style Selector="^ /template/ Border#Border">
+                        <Setter Property="BorderBrush" Value="Transparent" />
+                    </Style>
+
+                    <Style Selector="^ /template/ ContentPresenter#Content">
+                        <Setter Property="Foreground" Value="{StaticResource BackgroundMain}" />
+                        <Setter Property="FontWeight" Value="SemiBold" />
+                    </Style>
+
+                    <Style Selector="^:pointerover">
+                        <Style Selector="^ /template/ Border#Border">
+                            <Setter Property="BorderBrush" Value="{StaticResource BackgroundMain}" />
+                        </Style>
+                        <Style Selector="^ /template/ Border#Root">
+                            <Setter Property="Background" Value="{StaticResource BackgroundMain}" />
+                        </Style>
+                    </Style>
+
+                    <Style Selector="^:pressed">
+                        <Style Selector="^ /template/ Border#Border">
+                            <Setter Property="BorderBrush" Value="{StaticResource BackgroundSelected}" />
+                        </Style>
+
+                        <Style Selector="^ /template/ Border#Root">
+                            <Setter Property="Background" Value="{StaticResource BackgroundMain}" />
+                        </Style>
+                    </Style>
+                </Style>
+            </ControlTheme>
+        </ResourceDictionary>
+    </UserControl.Resources>
+    <Grid ColumnDefinitions="*,*" >
+        <CalendarDatePicker Theme="{StaticResource DatePickerTheme}"
+                            Margin="2,0"
+                            HorizontalContentAlignment="Center"
+                            HorizontalAlignment="Stretch"
+                            DisplayDate="{Binding CurrentDate, ElementName=Root}"
+                            SelectedDate="{Binding CurrentDate, ElementName=Root}">
+        </CalendarDatePicker>
+        <TextBox Grid.Column="1"
+                 Width="NaN"
+                 MinWidth="0"
+                 Margin="2,0"
+                 CornerRadius="5"
+                 HorizontalAlignment="Stretch"
+                 VerticalAlignment="Center"
+                 KeyDown="TextBox_OnKeyDown"
+                 LostFocus="TextBox_OnLostFocus"
+                 Text="{Binding Time, ElementName=Root, Mode=OneWay}"
+                 x:Name="TextBox"
+                 HorizontalContentAlignment="Stretch"/>
+    </Grid>
+</UserControl>

@@ -7,8 +7,8 @@ namespace MaloyClient.Models.Implementation;
 internal sealed class Device : ViewModelBase, IDevice
 {
     private string _name;
-    private DateTime _timeMax;
-    private DateTime _timeMin;
+    private DateTime _timeMax = DateTime.Now;
+    private DateTime _timeMin = DateTime.Today;
 
     public Device(string serialNumber, string name)
     {
