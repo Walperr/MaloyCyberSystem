@@ -33,4 +33,6 @@ public interface IMainViewModel
     ICommand DisconnectCommand { get; }
     
     ICommand OpenDeviceTabCommand { get; }
+    
+    ICommand CancelConnectionCommand { get; }
 }

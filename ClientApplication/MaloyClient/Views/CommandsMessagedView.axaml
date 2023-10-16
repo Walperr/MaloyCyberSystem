@@ -26,12 +26,14 @@
                                         <TextBox IsReadOnly="{Binding !CanEdit}"
                                                  Text="{Binding CommandName}"
                                                  Width="NaN"
+                                                 TextWrapping="Wrap"
                                                  Background="Transparent"
                                                  IsHitTestVisible="{Binding CanEdit}" />
                                     </Button>
                                     <TextBox Grid.Column="1"
                                              Text="{Binding Content}"
                                              Width="NaN"
+                                             TextWrapping="Wrap"
                                              VerticalAlignment="Center"
                                              HorizontalAlignment="Left"
                                              Margin="2,0,0,0"

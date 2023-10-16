@@ -7,6 +7,7 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using MaloyClient.Dto;
+using MaloyClient.Misc;
 using MQTTnet;
 using MQTTnet.Client;
 using MQTTnet.Formatter;
@@ -246,7 +247,7 @@ internal sealed class ClientService : IClientService, IDisposable
         {
             var response =
                 await _httpClient.GetAsync(
-                    $"api/Devices/Data/Interval/{deviceID}?beginTime={start:yyyy-MM-ddTHH:mm:ssZ}&endTime={end:yyyy-MM-ddTHH:mm:ssZ}");
+                    $"api/Devices/Data/Interval/{deviceID}?beginTime={start.DateTimeToUnixTimeStamp()}&endTime={end.DateTimeToUnixTimeStamp()}");
 
             return await response.Content.ReadFromJsonAsync<DeviceValues>() ?? DeviceValues.Empty;
         }
@@ -261,6 +262,16 @@ internal sealed class ClientService : IClientService, IDisposable
     public void RenameDevice(string deviceID, string name)
     {
         
+    }
+
+    public async Task CancelDeviceConnection(string deviceID)
+    {
+        var topic = $"Device/Connections/{deviceID}";
+        
+        if (_mqttClient is null)
+            return;
+
+        await _mqttClient.PublishStringAsync(topic, "cancel");
     }
 
     public void Dispose()

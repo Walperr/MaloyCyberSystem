@@ -128,7 +128,7 @@
               IsVisible="{Binding ShowCommands}">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="Auto"/>
-                <ColumnDefinition Width="250"/>
+                <ColumnDefinition Width="300"/>
             </Grid.ColumnDefinitions>
             <GridSplitter Grid.Column="0"
                           Theme="{StaticResource VerticalSplitter}"
@@ -155,11 +155,12 @@
                          x:Name="CodeTextBox"/>
             
                 <Button Theme="{StaticResource CommandButtonTheme}"
-                        HorizontalAlignment="Center"
-                        Width="180"
                         Content="Submit"
                         Command="{Binding ConfirmConnectionCommand}"
                         CommandParameter="{Binding Text, ElementName=CodeTextBox}"/>
+                
+                <Button Content="Cancel"
+                        Command="{Binding CancelConnectionCommand}"/>
             </StackPanel>
         </Grid>
     </Grid>

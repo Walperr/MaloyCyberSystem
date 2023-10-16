@@ -32,4 +32,5 @@ public interface IClientService
     Task<DeviceValues> GetDeviceData(string deviceID, DateTime start, DateTime end);
 
     void RenameDevice(string deviceID, string name);
+    Task CancelDeviceConnection(string deviceID);
 }

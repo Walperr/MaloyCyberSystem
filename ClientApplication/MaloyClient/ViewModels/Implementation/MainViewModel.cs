@@ -21,6 +21,7 @@ internal sealed class MainViewModel : ViewModelBase, IMainViewModel
     private readonly ObservableCollection<Notification> _notifications = new();
     private readonly IServiceProvider _services;
     private ICommand? _addNewCommand;
+    private ICommand? _cancelConnectionCommand;
     private ICommand? _confirmConnectionCommand;
     private ICommand? _connectDeviceCommand;
     private int _deviceToConnectIndex;
@@ -102,6 +103,9 @@ internal sealed class MainViewModel : ViewModelBase, IMainViewModel
             return;
 
         var device = _allDevices[DeviceToConnectIndex];
+        
+        if (ConnectedDevices.Contains(device))
+            return;
 
         _clientService.ConnectDevice(device.SerialNumber);
 
@@ -146,6 +150,15 @@ internal sealed class MainViewModel : ViewModelBase, IMainViewModel
         }
 
         SelectedTab = tab;
+    });
+
+    public ICommand CancelConnectionCommand => _cancelConnectionCommand ??= ReactiveCommand.Create(() =>
+    {
+        ShowConfirmation = false;
+
+        var device = _allDevices[DeviceToConnectIndex];
+
+        _clientService.CancelDeviceConnection(device.SerialNumber);
     });
 
     private void ClientOnDisconnected(object? sender, EventArgs e)
