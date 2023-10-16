@@ -188,6 +188,8 @@ internal sealed class PlotViewModel : ReactiveObject, IPlotViewModel
         if (e.PropertyName is nameof(IPlotSeries.XValues) or nameof(IPlotSeries.YValues))
         {
             AdjustScale();
+            if (!AutoScale)
+                RedrawSuggested?.Invoke(this, EventArgs.Empty);
             return;
         }
 

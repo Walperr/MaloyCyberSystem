@@ -47,17 +47,19 @@ internal sealed class DeviceTabViewModel : ViewModelBase, IDeviceTabViewModel
     {
         var values = await _clientService.GetDeviceData(Device.SerialNumber, Device.TimeMin, Device.TimeMax);
 
-        _series.XValues = values.Times.Select((t, i) =>
-        {
-            // var year = t.Year;
-            // var day = t.DayOfYear;
-            // var hour = t.Hour;
-            // var minute = t.Minute;
-            // var sec = t.Second;
-            //
-            // return (double) sec + minute * 60 + hour * 60 * 60 + day * 24 * 60 * 60 + year * 365 * 24 * 60 * 60;
-            return (double)i;
-        }).OrderBy(x => x).ToArray();
+        // _series.XValues = values.Times.Select((t, i) =>
+        // {
+        //     // var year = t.Year;
+        //     // var day = t.DayOfYear;
+        //     // var hour = t.Hour;
+        //     // var minute = t.Minute;
+        //     // var sec = t.Second;
+        //     //
+        //     // return (double) sec + minute * 60 + hour * 60 * 60 + day * 24 * 60 * 60 + year * 365 * 24 * 60 * 60;
+        //     return (double)i;
+        // }).OrderBy(x => x).ToArray();
+
+        _series.XValues = values.Times.Select(l => (double)l).ToArray();
 
         _series.YValues = values.Values;
     });
