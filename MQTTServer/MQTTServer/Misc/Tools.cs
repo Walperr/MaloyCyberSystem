@@ -45,4 +45,18 @@ public static class Tools
 
         return startIndex;
     }
+    
+    public static DateTime UnixTimeStampToDateTime(this ulong unixTimeStamp)
+    {
+        // Unix timestamp is seconds past epoch
+        var dateTime = DateTime.UnixEpoch;
+        
+        dateTime = dateTime.AddSeconds( unixTimeStamp ).ToLocalTime();
+        return dateTime;
+    }
+
+    public static ulong DateTimeToUnixTimeStamp(this DateTime dateTime)
+    {
+        return (ulong)(dateTime.Ticks - DateTime.UnixEpoch.Ticks) / 1000000;
+    }
 }

@@ -19,15 +19,15 @@ public sealed class Device
     
     public List<string>? SubscribedTopics { get; set; }
     
-    public DateTime[]? Times { get; set; }
+    public ulong[]? Times { get; set; }
     
     public double[]? Values { get; set; }
 
     public int ConnectionCode { get; set; } = -1;
     
-    public void AddValue(DateTime time, double value)
+    public void AddValue(ulong time, double value)
     {
-        var times = Times ??= Array.Empty<DateTime>();
+        var times = Times ??= Array.Empty<ulong>();
         var values = Values ??= Array.Empty<double>();
         
         Array.Resize(ref times, times.Length + 1);
@@ -42,7 +42,7 @@ public sealed class Device
 
     public void Clear()
     {
-        Times = Array.Empty<DateTime>();
+        Times = Array.Empty<ulong>();
         Values = Array.Empty<double>();
     }
 }

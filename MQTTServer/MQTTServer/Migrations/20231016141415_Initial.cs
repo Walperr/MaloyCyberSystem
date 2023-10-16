@@ -18,7 +18,11 @@ namespace MQTTServer.Migrations
                     DeviceID = table.Column<string>(type: "text", nullable: false),
                     DeviceName = table.Column<string>(type: "text", nullable: false),
                     PasswordHash = table.Column<string>(type: "text", nullable: false),
-                    SubscribedTopics = table.Column<List<string>>(type: "text[]", nullable: true)
+                    Salt = table.Column<string>(type: "text", nullable: false),
+                    SubscribedTopics = table.Column<List<string>>(type: "text[]", nullable: true),
+                    Times = table.Column<decimal[]>(type: "numeric(20,0)[]", nullable: true),
+                    Values = table.Column<double[]>(type: "double precision[]", nullable: true),
+                    ConnectionCode = table.Column<int>(type: "integer", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -33,7 +37,8 @@ namespace MQTTServer.Migrations
                     Username = table.Column<string>(type: "text", nullable: false),
                     PasswordHash = table.Column<string>(type: "text", nullable: false),
                     Salt = table.Column<string>(type: "text", nullable: false),
-                    SubscribedTopics = table.Column<List<string>>(type: "text[]", nullable: true)
+                    SubscribedTopics = table.Column<List<string>>(type: "text[]", nullable: true),
+                    ConnectedDevicesID = table.Column<List<string>>(type: "text[]", nullable: true)
                 },
                 constraints: table =>
                 {

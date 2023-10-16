@@ -12,7 +12,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace MQTTServer.Migrations
 {
     [DbContext(typeof(ApplicationDataContext))]
-    [Migration("20231005180820_Initial")]
+    [Migration("20231016141415_Initial")]
     partial class Initial
     {
         /// <inheritdoc />
@@ -20,7 +20,7 @@ namespace MQTTServer.Migrations
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "7.0.11")
+                .HasAnnotation("ProductVersion", "7.0.12")
                 .HasAnnotation("Relational:MaxIdentifierLength", 63);
 
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
@@ -30,6 +30,9 @@ namespace MQTTServer.Migrations
                     b.Property<string>("DeviceID")
                         .HasColumnType("text");
 
+                    b.Property<int>("ConnectionCode")
+                        .HasColumnType("integer");
+
                     b.Property<string>("DeviceName")
                         .IsRequired()
                         .HasColumnType("text");
@@ -38,8 +41,18 @@ namespace MQTTServer.Migrations
                         .IsRequired()
                         .HasColumnType("text");
 
+                    b.Property<string>("Salt")
+                        .IsRequired()
+                        .HasColumnType("text");
+
                     b.Property<List<string>>("SubscribedTopics")
                         .HasColumnType("text[]");
+
+                    b.Property<decimal[]>("Times")
+                        .HasColumnType("numeric(20,0)[]");
+
+                    b.Property<double[]>("Values")
+                        .HasColumnType("double precision[]");
 
                     b.HasKey("DeviceID");
 
@@ -50,6 +63,9 @@ namespace MQTTServer.Migrations
                 {
                     b.Property<string>("UserID")
                         .HasColumnType("text");
+
+                    b.Property<List<string>>("ConnectedDevicesID")
+                        .HasColumnType("text[]");
 
                     b.Property<string>("PasswordHash")
                         .IsRequired()

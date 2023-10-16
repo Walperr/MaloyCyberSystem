@@ -22,72 +22,89 @@ const uint rs = 12, enable = 13, d4 = 0, d5 = 4, d6 = 5, d7 = 16;
 
 LiquidCrystal lcd(rs, enable, d4, d5, d6, d7);
 
-String ConvertTimeToString(time_t time)
+void LcdPrint(int line, const char* message)
 {
-  tm *ltm = localtime(&time);
-
-  int year = ltm->tm_year + 1900;
-  int month = ltm->tm_mon + 1;
-  int day = ltm->tm_mday;
-  int hour = ltm->tm_hour;
-  int min = ltm->tm_min;
-  int sec = ltm->tm_sec;
-
-  return String(year)+"-"+ToTwoDigitString(month)+"-"+ToTwoDigitString(day)+"T"+ToTwoDigitString(hour)+":"+ToTwoDigitString(min)+":"+ToTwoDigitString(sec)+"Z";
+  lcd.setCursor(0, line);
+  lcd.print(CLEAN_LINE);
+  lcd.setCursor(0,line);
+  lcd.print(message);
 }
 
-String ToTwoDigitString(int value)
+void LcdPrint(int line, String message)
 {
-  String str = "00";
-  str[0] = '0' + value / 10;
-  str[1] = '0' + value % 10;
-
-  return str;
+  LcdPrint(line, message.c_str());
 }
 
 void OnMessageReceived(char* topic, byte* payload, unsigned int length) 
 {
   Serial.println(topic);
-  lcd.clear();
-  lcd.print(topic);
+  LcdPrint(0, topic);
 
-  Serial.println((char*)payload);
-  lcd.setCursor(0,1);
-  lcd.print(CLEAN_LINE);
-  lcd.setCursor(0,1);
-  lcd.print((char*)payload);
+  char* message = new char[length + 1];
+
+  for (int i = 0; i < length; i ++)
+    message[i] = (char)payload[i];
+
+  message[length] = 0;
+
+  Serial.println(message);
   
   if (String(topic) == String(CONNECTIONS_TOPIC))
   {
-    int number = rand() % 9000 + 1000;
+    if (String(message) == String("connect"))
+    {
+      srand(time(0));
+      int number = rand() % 9000 + 1000;
     
-    Serial.print("to connect enter");
-    Serial.println(String(number));
+      Serial.print("to connect enter ");
+      Serial.println(String(number));
 
-    lcd.clear();
-    lcd.print("to connect enter");
-    lcd.setCursor(0,1);
-    lcd.print(CLEAN_LINE);
-    lcd.setCursor(0,1);
-    lcd.print(String(number));
+      LcdPrint(0, "to connect enter");
+      LcdPrint(1, String(number));
 
-    client.publish("Device/ConnectionKeys", String(number).c_str());
+      client.publish("Device/ConnectionKeys", String(number).c_str());
+    }
+    else if (String(message) == String("cancel"))
+    {
+      lcd.clear();
+
+      client.publish("Device/ConnectionKeys", String(-1).c_str());
+    }
   }
 
   if (String(topic) == String(COMMANDS_TOPIC))
-  {
-    Serial.print("Command: ");
-    for (int i = 0; i < length; i++)
-      Serial.print((char)payload[i]);
+  {   
+    int commandLength = strcspn(message, "/") + 1;
 
-    lcd.clear();
-    lcd.print("Command:");
-    lcd.setCursor(0,1);
-    lcd.print(CLEAN_LINE);
-    lcd.setCursor(0,1);
-    for (int i = 0; i < length; i++)
-      lcd.print((char)payload[i]);
-  
+    char* command = new char[commandLength];
+    char* content = message + commandLength;
+
+    for (int i = 0; i < commandLength; i++)
+      command[i] = message[i];
+
+    command[commandLength - 1] = 0;
+
+    if (String(command) == String("print"))
+    {
+      Serial.print(content);
+      LcdPrint(0, content);
+
+      client.publish(NOTIFICATION_TOPIC, (String("invoked command: ") + String(command)).c_str());
+    }
+    else if (String(command) == String("restart"))
+    {
+      client.publish(NOTIFICATION_TOPIC, (String("invoked command: ") + String(command)).c_str());
+
+      ESP.reset();
+    }
+    else
+    {
+      client.publish(NOTIFICATION_TOPIC, (String("invoked command: ") + String(message)).c_str());
+
+      LcdPrint(0, message);
+    }
+
+    delete[] command;
   }
 }
 
@@ -108,24 +125,15 @@ void InitializeTimeSync()
 void InitializeConfigServer()
 {
   Serial.println("Starting server");
-  lcd.setCursor(0,0);
-  lcd.print(CLEAN_LINE);
-  lcd.setCursor(0,0);
-  lcd.print("Starting server");
+  LcdPrint(0, "Starting server");
   
   configuration.NetworkName = String("Maloy ") + String(SERIAL_NUMBER);
 
   Serial.println("Connect to");
-  lcd.setCursor(0,0);
-  lcd.print(CLEAN_LINE);
-  lcd.setCursor(0,0);
-  lcd.print("Connect to");
+  LcdPrint(0, "Connect to");
 
   Serial.println(configuration.NetworkName);
-  lcd.setCursor(0,1);
-  lcd.print(CLEAN_LINE);
-  lcd.setCursor(0,1);
-  lcd.print(configuration.NetworkName);
+  LcdPrint(1, configuration.NetworkName);
 
   RunServer();
 
@@ -141,10 +149,7 @@ void ConnectToWifi()
   Serial.println(configuration.Password);
 
   Serial.println("Connecting");
-  lcd.setCursor(0,0);
-  lcd.print(CLEAN_LINE);
-  lcd.setCursor(0,0);
-  lcd.print("Connecting");
+  LcdPrint(0, "Connecting");
 
   lcd.setCursor(0,1);
   lcd.print(CLEAN_LINE);
@@ -158,16 +163,7 @@ void ConnectToWifi()
   }
 
   Serial.println("Connected");
-  lcd.setCursor(0,0);
-  lcd.print(CLEAN_LINE);
-  lcd.setCursor(0,0);
-  lcd.print("Connected");
-
-  Serial.println(WiFi.localIP());
-  lcd.setCursor(0,1);
-  lcd.print(CLEAN_LINE);
-  lcd.setCursor(0,1);
-  lcd.print(WiFi.localIP());
+  LcdPrint(0, "Connected");
 }
 
 void MqttReconnect() 
@@ -176,14 +172,8 @@ void MqttReconnect()
   while (!client.connected()) 
   {
     Serial.println("Connecting to MQTT broker");
-    lcd.setCursor(0,0);
-    lcd.print(CLEAN_LINE);
-    lcd.setCursor(0,0);
-    lcd.print("Connecting to ");
-    lcd.setCursor(0,1);
-    lcd.print(CLEAN_LINE);
-    lcd.setCursor(0,1);
-    lcd.print("MQTT broker");
+    LcdPrint(0, "Connecting to");
+    LcdPrint(1, "MQTT broker");
 
     String clientId = SERIAL_NUMBER;
     String password = DEVICE_PASSWORD;
@@ -191,28 +181,20 @@ void MqttReconnect()
     if (client.connect(clientId.c_str(), clientId.c_str(), password.c_str()))
     {
       Serial.println("mqtt connected");
-      lcd.setCursor(0,0);
-      lcd.print(CLEAN_LINE);
-      lcd.setCursor(0,0);
-      lcd.print("mqtt connected");
+      LcdPrint(0, "mqtt connected");
       client.subscribe(COMMANDS_TOPIC);
       client.subscribe(CONNECTIONS_TOPIC);
+      client.publish(NOTIFICATION_TOPIC, "connected to server");
     }
     else
     {
       Serial.println(String("failed, rc=") + String(client.state()));
-      lcd.setCursor(0,0);
-      lcd.print(CLEAN_LINE);
-      lcd.setCursor(0,0);
-      lcd.print(String("failed, rc=") + String(client.state()));
+      LcdPrint(0, String("failed, rc=") + String(client.state()));
       
       Serial.println("retry in 30 seconds");
-      lcd.setCursor(0,1);
-      lcd.print(CLEAN_LINE);
-      lcd.setCursor(0,1);
-      lcd.print("retry in 30 sec");
+      LcdPrint(1, "retry in 5 sec");
 
-      delay(30000);
+      delay(5000);
     }
   }
 }
@@ -221,15 +203,10 @@ void InitializeMqttClient()
 {
   client.setServer(configuration.BrokerAddress, configuration.Port);
 
-  Serial.println(String(configuration.BrokerAddress) + String(":") + String(configuration.Port));
-
   client.setCallback(OnMessageReceived);
 
   Serial.println("MQTT initialized");
-  lcd.setCursor(0,1);
-  lcd.print(CLEAN_LINE);
-  lcd.setCursor(0,1);
-  lcd.print("MQTT initialized");
+  LcdPrint(1, "MQTT initialized");
 }
 
 void setup()
@@ -267,12 +244,12 @@ void loop()
   {
     last = now;
 
-    String curTime = ConvertTimeToString(time(nullptr));
+    unsigned long int unixTime = time(nullptr);
     double value = GetData();
 
-    String json = String("{ \"time\" : \"") + curTime + String("\", \"value\" :") + String(value) + String("}");
+    String payload = String(unixTime) + String("_") + String(value);
 
-    client.publish("Device/Data", json.c_str());
+    client.publish("Device/Data", payload.c_str());
 
     if (value >= 60000 && value <= 120000)
     { 
@@ -280,16 +257,10 @@ void loop()
 
       Serial.println(alarmMessage);
 
-      lcd.setCursor(0,0);
-      lcd.print(CLEAN_LINE);
-      lcd.setCursor(0,0);
-      lcd.print("Alarm! The Value is ");
-
-      lcd.setCursor(0,1);
-      lcd.print(CLEAN_LINE);
-      lcd.setCursor(0,1);
-      lcd.print(String(value));
-
+      LcdPrint(0, "Alarm! Value is ");
+      
+      LcdPrint(1, String(value));
+      
       client.publish(NOTIFICATION_TOPIC, alarmMessage.c_str());
     }
   }

@@ -5,8 +5,8 @@ namespace MQTTServer.Dto;
 public sealed class TimeBounds
 {
     [JsonPropertyName("beginTime")]
-    public DateTime BeginTime { get; set; }
+    public ulong BeginTime { get; set; }
     
     [JsonPropertyName("endTime")]
-    public DateTime EndTime { get; set; }
+    public ulong EndTime { get; set; }
 }

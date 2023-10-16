@@ -1,11 +1,10 @@
+using System.Globalization;
 using System.Text.RegularExpressions;
 using MQTTnet.Protocol;
 using MQTTnet.Server;
 using MQTTServer.DataContexts;
-using MQTTServer.Dto;
 using MQTTServer.Misc;
 using MQTTServer.Models;
-using Device = MQTTServer.Models.Device;
 using Server = MQTTnet.Server.MqttServer;
 
 namespace MQTTServer.Services.Implementation;
@@ -72,11 +71,11 @@ internal sealed class BrokerService : IBrokerService
         string passwordHash;
 
         var device = await _dataContext.FindAsync<Device>(deviceID);
-        
+
         if (device is null)
         {
             passwordHash = e.Password.GetPasswordHash(salt);
-            
+
             device = new Device
             {
                 DeviceID = deviceID,
@@ -231,26 +230,52 @@ internal sealed class BrokerService : IBrokerService
 
     public async Task OnMessageReceived(InterceptingPublishEventArgs e)
     {
-        if (e.ApplicationMessage.Topic is not Topics.CONNECTION_KEYS_TOPIC)
-            return;
+        if (e.ApplicationMessage.Topic is Topics.CONNECTION_KEYS_TOPIC)
+        {
+            var isUserProperty = e.ApplicationMessage.UserProperties?
+                .FirstOrDefault(p
+                    => p.Name.ToLowerInvariant() == "user")?
+                .Value;
 
-        var isUserProperty = e.ApplicationMessage.UserProperties?
-            .FirstOrDefault(p
-                => p.Name.ToLowerInvariant() == "user")?
-            .Value;
+            var payload = e.ApplicationMessage.PayloadSegment.ConvertToString();
+            if (payload.Length != 4)
+                return;
 
-        var payload = e.ApplicationMessage.PayloadSegment.ConvertToString();
-        if (payload.Length != 4)
-            return;
+            var code = Convert.ToInt32(payload);
 
-        var code = Convert.ToInt32(payload);
+            var isUser = isUserProperty?.ToLowerInvariant() == "true";
 
-        var isUser = isUserProperty?.ToLowerInvariant() == "true";
+            if (!isUser)
+                await StoreConnectionKey(e.ClientId, code);
+            else
+                await TryConnectUserAndDevice(e, code);
+        }
 
-        if (!isUser)
-            await StoreConnectionKey(e.ClientId, code);
-        else
-            await TryConnectUserAndDevice(e, code);
+        if (e.ApplicationMessage.Topic is Topics.DATA_TOPIC)
+        {
+            var payload = e.ApplicationMessage.PayloadSegment.ConvertToString();
+
+            var split = payload.Split('_', StringSplitOptions.TrimEntries | StringSplitOptions.RemoveEmptyEntries);
+
+            try
+            {
+                var timeUnix = ulong.Parse(split[0]);
+                var value = double.Parse(split[1].Replace(',', ','), CultureInfo.InvariantCulture);
+
+                var device = await _dataContext.Devices.FindAsync(e.ClientId);
+
+                if (device is null)
+                    return;
+
+                device.AddValue(timeUnix, value);
+
+                await _dataContext.SaveChangesAsync();
+            }
+            catch (Exception)
+            {
+                // ignored
+            }
+        }
     }
 
     private async Task AuthorizeUser(ValidatingConnectionEventArgs e)
@@ -323,6 +348,8 @@ internal sealed class BrokerService : IBrokerService
 
         await _server.InjectApplicationMessage(Topics.SERVER_NOTIFICATIONS_TOPIC,
             $"Connected device and user {e.ClientId}");
+
+        await _server.InjectApplicationMessage($"{Topics.COMMANDS_TOPIC}{deviceID}", $"print/connected {e.ClientId}");
     }
 
     private async Task StoreConnectionKey(string deviceID, int code)
@@ -333,22 +360,6 @@ internal sealed class BrokerService : IBrokerService
             return;
 
         device.ConnectionCode = code;
-
-        await _dataContext.SaveChangesAsync();
-    }
-
-    [MessageReceiver]
-    public async Task OnMessageReceived(string senderID, string topic, DeviceValue data)
-    {
-        if (topic is not Topics.DATA_TOPIC)
-            return;
-
-        var device = await _dataContext.Devices.FindAsync(senderID);
-
-        if (device is null)
-            return;
-
-        device.AddValue(data.Time, data.Value);
 
         await _dataContext.SaveChangesAsync();
     }

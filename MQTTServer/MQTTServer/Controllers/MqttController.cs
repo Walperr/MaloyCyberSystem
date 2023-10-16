@@ -105,63 +105,10 @@ public sealed class MqttController
         if (topic is Topics.DATA_TOPIC or Topics.CONNECTION_KEYS_TOPIC)
         {
             await broker.OnMessageReceived(e);
-            await TryProcessMessageWithPayload(e, scope.ServiceProvider);
         }
         else
             await broker.OnMessagePublishing(e);
     }
-
-    private Task TryProcessMessageWithPayload(InterceptingPublishEventArgs e, IServiceProvider services)
-    {
-        var payload = e.ApplicationMessage.PayloadSegment.ConvertToString();
-        
-        var methodInfos = Assembly
-            .GetExecutingAssembly()
-            .GetTypes()
-            .Where(t => t.GetInterfaces().Contains(typeof(IBrokerService)))
-            .SelectMany(t => t
-                .GetMethods()
-                .Where(m =>
-                {
-                    var parameters = m.GetParameters();
-                    return m.CustomAttributes.Any(a => a.AttributeType == typeof(MessageReceiverAttribute)) &&
-                           parameters.Length == 3 &&
-                           parameters[0].ParameterType == typeof(string) &&
-                           parameters[1].ParameterType == typeof(string);
-                }))
-            .ToArray();
-
-        var tasks = new List<Task>();
-
-        foreach (var methodInfo in methodInfos)
-        {
-            if (methodInfo.DeclaringType is null)
-                continue;
-
-            try
-            {
-                var service = services.GetRequiredService(typeof(IBrokerService));
-
-                var objectType = methodInfo.GetParameters()[2].ParameterType;
-
-                var value = JsonSerializer.Deserialize(payload, objectType);
-
-                var result = methodInfo.Invoke(service, new[] {e.ClientId, e.ApplicationMessage.Topic, value});
-
-                if (result is Task task)
-                    tasks.Add(task);
-            }
-            catch (InvalidOperationException)
-            {
-            }
-            catch (JsonException)
-            {
-            }
-        }
-
-        return Task.WhenAll(tasks);
-    }   
-
     public async Task ValidateSubscription(InterceptingSubscriptionEventArgs e)
     {
         await using var scope = _services.CreateAsyncScope();
