@@ -1,4 +1,5 @@
-﻿using System.Windows.Input;
+﻿using System.Collections.Generic;
+using System.Windows.Input;
 using Avalonia.Plot.ViewModel;
 using MaloyClient.Models;
 
@@ -11,4 +12,6 @@ public interface IDeviceTabViewModel
     IPlotViewModel Plot { get; }
     
     ICommand RefreshDataCommand { get; }
+    
+    IEnumerable<DataRow> DeviceData { get; } 
 }

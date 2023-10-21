@@ -5,8 +5,8 @@ namespace MaloyClient.Models.Implementation;
 
 internal sealed class Device : ReactiveObject, IDevice
 {
-    private string _name;
     private readonly IClientService _clientService;
+    private string _name;
     private DateTime _timeMax = DateTime.Now;
     private DateTime _timeMin = DateTime.Today;
 
@@ -40,9 +40,6 @@ internal sealed class Device : ReactiveObject, IDevice
         get => _timeMax;
         set => this.RaiseAndSetIfChanged(ref _timeMax, value);
     }
-
-    public DateTime[] Times { get; } = Array.Empty<DateTime>();
-    public double[] Values { get; } = Array.Empty<double>();
 
     public bool Online { get; } = true;
 }

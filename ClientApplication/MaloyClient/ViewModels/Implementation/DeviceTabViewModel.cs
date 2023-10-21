@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Linq;
 using System.Windows.Input;
 using Avalonia;
@@ -6,6 +8,7 @@ using Avalonia.Controls;
 using Avalonia.Media;
 using Avalonia.Plot.Misc;
 using Avalonia.Plot.ViewModel;
+using MaloyClient.Misc;
 using MaloyClient.Models;
 using Microsoft.Extensions.DependencyInjection;
 using ReactiveUI;
@@ -17,6 +20,7 @@ internal sealed class DeviceTabViewModel : ViewModelBase, IDeviceTabViewModel
     private ICommand? _refreshData;
     private readonly IClientService _clientService;
     private readonly IPlotSeries _series;
+    private readonly ObservableCollection<DataRow> _deviceData = new();
 
     public DeviceTabViewModel(IDevice device, IServiceProvider services)
     {
@@ -45,22 +49,20 @@ internal sealed class DeviceTabViewModel : ViewModelBase, IDeviceTabViewModel
     public IPlotViewModel Plot { get; }
     public ICommand RefreshDataCommand => _refreshData ??= ReactiveCommand.CreateFromTask(async () =>
     {
+        _deviceData.Clear();
+        
         var values = await _clientService.GetDeviceData(Device.SerialNumber, Device.TimeMin, Device.TimeMax);
 
-        // _series.XValues = values.Times.Select((t, i) =>
-        // {
-        //     // var year = t.Year;
-        //     // var day = t.DayOfYear;
-        //     // var hour = t.Hour;
-        //     // var minute = t.Minute;
-        //     // var sec = t.Second;
-        //     //
-        //     // return (double) sec + minute * 60 + hour * 60 * 60 + day * 24 * 60 * 60 + year * 365 * 24 * 60 * 60;
-        //     return (double)i;
-        // }).OrderBy(x => x).ToArray();
+        var newData = values.Times
+            .Select((t, i) =>
+                new DataRow(i, t.UnixTimeStampToDateTime(), values.Values[i]));
+        
+        foreach (var dataRow in newData)
+            _deviceData.Add(dataRow);
 
         _series.XValues = values.Times.Select(l => (double)l).ToArray();
-
         _series.YValues = values.Values;
     });
+
+    public IEnumerable<DataRow> DeviceData => _deviceData;
 }

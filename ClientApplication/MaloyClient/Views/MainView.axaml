@@ -5,7 +5,6 @@
              xmlns:viewModels="clr-namespace:MaloyClient.ViewModels"
              xmlns:view="clr-namespace:Avalonia.Plot.View;assembly=Avalonia.Plot"
              xmlns:views="clr-namespace:MaloyClient.Views"
-             xmlns:models="clr-namespace:MaloyClient.Models"
              mc:Ignorable="d" d:DesignWidth="900" d:DesignHeight="500"
              x:Class="MaloyClient.Views.MainView"
              x:DataType="viewModels:IMainViewModel"
@@ -45,7 +44,7 @@
                             <CheckBox Grid.Row="0" Grid.Column="2" Content="Autoscale plot"
                                       IsChecked="{Binding Plot.AutoScale}"
                                       Foreground="{StaticResource TextMain}"
-                                      HorizontalAlignment="Left"/>
+                                      HorizontalAlignment="Left" />
                             <TextBlock Grid.Column="0" Grid.Row="1" Text="Data limits:" Margin="5"
                                        VerticalAlignment="Center" />
                             <Grid Grid.Row="1"
@@ -54,9 +53,9 @@
                                   Background="Transparent"
                                   ColumnDefinitions="*,*">
                                 <views:DateTimePicker Grid.Column="0" Margin="5,0"
-                                                      CurrentDateTime="{Binding Device.TimeMin}"/>
+                                                      CurrentDateTime="{Binding Device.TimeMin}" />
                                 <views:DateTimePicker Grid.Column="1" Margin="5,0"
-                                                      CurrentDateTime="{Binding Device.TimeMax}"/>
+                                                      CurrentDateTime="{Binding Device.TimeMax}" />
                             </Grid>
                             <TextBlock Grid.Row="0" Grid.Column="3" Text="Serial number: " Margin="5"
                                        VerticalAlignment="Center" x:Name="SerialText"
@@ -81,7 +80,18 @@
                                            BorderThickness="2"
                                            DataContext="{Binding Plot}" />
                             </TabItem>
-                            <TabItem Header="Data" />
+                            <TabItem Header="Data">
+                                <DataGrid ItemsSource="{Binding DeviceData}">
+                                    <DataGrid.Columns>
+                                        <DataGridTextColumn IsVisible="True" Header="№" Binding="{Binding Index}"
+                                                            IsReadOnly="True" Width="*" />
+                                        <DataGridTextColumn IsVisible="True" Header="Time" Binding="{Binding Time}"
+                                                            IsReadOnly="True" Width="*" />
+                                        <DataGridTextColumn IsVisible="True" Header="Value" Binding="{Binding Value}"
+                                                            IsReadOnly="True" Width="*" />
+                                    </DataGrid.Columns>
+                                </DataGrid>
+                            </TabItem>
                         </TabControl>
                     </Grid>
                 </DataTemplate>
@@ -127,40 +137,41 @@
         <Grid Grid.Column="3"
               IsVisible="{Binding ShowCommands}">
             <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="Auto"/>
-                <ColumnDefinition Width="300"/>
+                <ColumnDefinition Width="Auto" />
+                <ColumnDefinition Width="300" />
             </Grid.ColumnDefinitions>
             <GridSplitter Grid.Column="0"
                           Theme="{StaticResource VerticalSplitter}"
-                          ResizeBehavior="PreviousAndCurrent"/>
-            
-            <views:CommandsMessagedView Grid.Column="1"/>
+                          ResizeBehavior="PreviousAndCurrent" />
+
+            <views:CommandsMessagedView Grid.Column="1" />
         </Grid>
-        
+
         <ToggleButton Grid.Column="2"
                       Margin="10"
                       IsChecked="{Binding ShowCommands}"
                       Theme="{StaticResource ExpandLRTogglelButtonTheme}"
                       VerticalAlignment="Top"
-                      HorizontalAlignment="Right"/>
+                      HorizontalAlignment="Right" />
+
         <Grid Grid.Column="0" Grid.ColumnSpan="4"
               Background="{StaticResource BackgroundMain}"
               IsVisible="{Binding ShowConfirmation}">
             <TextBlock Theme="{StaticResource TitleText}"
-                       Text="Enter connection code"/>
+                       Text="Enter connection code" />
             <StackPanel Orientation="Vertical"
                         HorizontalAlignment="Center"
                         VerticalAlignment="Center">
                 <TextBox Watermark="4 digit code"
-                         x:Name="CodeTextBox"/>
-            
+                         x:Name="CodeTextBox" />
+
                 <Button Theme="{StaticResource CommandButtonTheme}"
                         Content="Submit"
                         Command="{Binding ConfirmConnectionCommand}"
-                        CommandParameter="{Binding Text, ElementName=CodeTextBox}"/>
-                
+                        CommandParameter="{Binding Text, ElementName=CodeTextBox}" />
+
                 <Button Content="Cancel"
-                        Command="{Binding CancelConnectionCommand}"/>
+                        Command="{Binding CancelConnectionCommand}" />
             </StackPanel>
         </Grid>
     </Grid>
