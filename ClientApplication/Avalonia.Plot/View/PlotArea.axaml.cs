@@ -76,7 +76,7 @@ public partial class PlotArea : UserControl
 
         var plotSeries = _plot.Series;
 
-        var bounds = canvas.LocalClipBounds;
+        var bounds = Bounds.ToSKRect();
 
         var xMin = _plot.XMin;
         var xMax = _plot.XMax;
